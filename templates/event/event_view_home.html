@@ -1,0 +1,866 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<meta name="description" content="{{config.title}}">
+	<meta name="author" content="ifasy">
+	<title>{{config.title}}|{{event.title}}</title>
+
+	<!-- Favicons-->
+	<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+	<link rel="apple-touch-icon" type="image/x-icon" href="img/apple-touch-icon-57x57-precomposed.png">
+	<link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="img/apple-touch-icon-72x72-precomposed.png">
+	<link rel="apple-touch-icon" type="image/x-icon" sizes="114x114" href="img/apple-touch-icon-114x114-precomposed.png">
+	<link rel="apple-touch-icon" type="image/x-icon" sizes="144x144" href="img/apple-touch-icon-144x144-precomposed.png">
+
+	<!-- Google web fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Gochi+Hand|Lato:300,400|Montserrat:400,400i,700,700i" rel="stylesheet">
+
+	<!-- CSS -->
+	<link href="{% static 'css/home/base.css' %}" rel="stylesheet">
+  {% include "base/style.html" %}
+	<!-- CSS -->
+	<link href="{% static 'css/home/slider-pro.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/home/date_time_picker.css' %}" rel="stylesheet">
+
+	<style>
+		.dnone{
+			display: none;
+		}
+
+		.btnShare, .btnShare:hover, .btnShare:checked{
+			font-size: 1.2em;
+			padding: 5px;
+			color: white;
+			border-radius: 5px;
+			font-weight: 300;
+		}
+
+		.btfacebook{
+			background-color: #3b5998;
+		}
+
+		.bttwitter{
+			background-color: #4099FF;
+		}
+
+		.btnShare i{
+			font-size: 1em;
+		}
+
+		.tablinks i{
+			cursor: pointer;
+		}
+
+		.tablinks i:hover{
+			color: rgba(0,0,0,.9);
+		}
+
+	</style>
+</head>
+
+<body>
+
+	<div id="preloader">
+		<div class="sk-spinner sk-spinner-wave">
+			<div class="sk-rect1"></div>
+			<div class="sk-rect2"></div>
+			<div class="sk-rect3"></div>
+			<div class="sk-rect4"></div>
+			<div class="sk-rect5"></div>
+		</div>
+	</div>
+	<!-- End Preload -->
+
+	<div class="layer"></div>
+	<!-- Mobile menu overlay mask -->
+
+	<!-- Header================================================== -->
+	<header>
+		<div id="top_line">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-6 col-sm-6 col-xs-6"></div>
+
+					<div class="col-md-6 col-sm-6 col-xs-6">
+						<ul id="top_links">
+							{% if user.is_authenticated %}
+									<li><a href="{% url 'profile:home' user.username %}"><span class="icon-user"></span>{{ user.username }}</a></li>
+									<li><a href="{% url 'logout' %}?next={% url 'home' %}"><span class="icon-logout"></span>Cerrar Sesíon</a></li>
+							{% else %}
+									<li>
+											<div class="dropdown dropdown-access">
+													<a href="#" class="dropdown-toggle" data-toggle="dropdown" id="access_link">Iniciar Sesión</a>
+													<div class="dropdown-menu">
+															<div class="row">
+																	<div class="col-md-6 col-sm-6 col-xs-6">
+																			<a href="{% url 'social:begin' 'facebook' %}" class="bt_facebook">
+																					<i class="icon-facebook"></i>Facebook </a>
+																	</div>
+																	<div class="col-md-6 col-sm-6 col-xs-6">
+																			<a href="{% url 'social:begin' 'twitter' %}" class="bt_paypal">
+																					<i class="icon-twitter"></i>Twitter </a>
+																	</div>
+															</div>
+															<div class="login-or">
+																	<hr class="hr-or">
+																	<span class="span-or">ó</span>
+															</div>
+															<div>
+															<form method="post" action="{% url 'login' %}">
+																{% csrf_token %}
+																	<div class="form-group">
+																		 <input type="text" class="form-control" id="inputUsernameEmail" name="username" placeholder="Usuario">
+																	</div>
+																	<div class="form-group">
+																			<input type="password" class="form-control" id="inputPassword" name="password" placeholder="Contraseña">
+																	</div>
+																	<a id="forgot_pw" href="{% url 'password_reset' %}">Olvide mi contraseña</a>
+																	<input type="submit" name="Sign_in" value="Entrar" id="Sign_in" class="button_drop">
+																	<a href="{% url 'register' %}" class="button_drop outline">Registrar</a>
+															</form>
+															</div>
+													</div>
+											</div><!-- End Dropdown access -->
+									</li>
+							{% endif %}
+						</ul>
+					</div>
+				</div>
+				<!-- End row -->
+			</div>
+			<!-- End container-->
+		</div>
+		<!-- End top line-->
+
+		<div class="container">
+				<div class="row">
+						<div class="col-md-3 col-sm-3 col-xs-3">
+								<div id="logo_home">
+									<h1><a href="{% url 'home' %}" title="City tours travel template">{{config.title}}</a></h1>
+								</div>
+						</div>
+						<nav class="col-md-9 col-sm-9 col-xs-9">
+								<a class="cmn-toggle-switch cmn-toggle-switch__htx open_close" href="javascript:void(0);"><span>Menu mobile</span></a>
+								<div class="main-menu">
+										<div id="header_menu">
+												<img src="{{config.logo.url}}" width="160" height="34" alt="City tours" data-retina="true">
+										</div>
+										<a href="#" class="open_close" id="close_in"><i class="icon_set_1_icon-77"></i></a>
+										{% include "base/nav.html" %}
+								</div><!-- End main-menu -->
+						</nav>
+				</div>
+		</div><!-- container -->
+		<!-- container -->
+	</header>
+	<!-- End Header -->
+
+	<section class="parallax-window" data-parallax="scroll" data-image-src="{% with images|first as image %}{{ image.image.url }}{% endwith %}" data-natural-width="1400" data-natural-height="470">
+		<div class="parallax-content-2">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-8 col-sm-8">
+						<h1>{{event.title}}</h1>
+						<span>{{event.location_name}}</span>
+					</div>
+					<div class="col-md-4 col-sm-4">
+						<div id="price_single_main">
+							{% with tickets|first as ticket %}
+								desde <span><sup>$</sup>{{ticket.price}}</span>
+							{% endwith %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End section -->
+
+	<main>
+		<div id="position">
+			<div class="container">
+				<ul>
+					<li><a href="#">Home</a>
+					</li>
+					<li><a href="#">Category</a>
+					</li>
+					<li>Page active</li>
+				</ul>
+			</div>
+		</div>
+		<!-- End Position -->
+
+		<div class="container margin_60">
+			<div id="single_tour_feat">
+				<ul>
+					<li class="tablinks" onclick="openPage(event,'info')"><i class="icon-info-4"></i>Informacion</li>
+					{% if guests %}<li class="tablinks" onclick="openPage(event,'guest')"><i class="icon-adult"></i>Invitados</li>{% endif %}
+					{% if schedules %}<li class="tablinks" onclick="openPage(event,'schedule')"><i class="icon-clock-alt"></i>Cronograma</li>{% endif %}
+					{% if gallery %}<li class="tablinks" onclick="openPage(event,'galery');showGalery();"><i class="icon-picture-1"></i>Galeria</li>{% endif %}
+					{% if admin %}
+						<li><a href="{% url 'events:dashboard' event.id %}"><i class="icon-edit"></i>Editar Evento</a></li>
+					{% endif %}
+				</ul>
+			</div>
+			<div class="row">
+				<div class="col-md-8 tabcontent" id="info">
+					<div id="Img_carousel" class="slider-pro">
+						<div class="sp-slides">
+
+							{% for image in images %}
+							<div class="sp-slide">
+								<img alt="Image" class="sp-image" src="{{image.image.url}}" data-src="{{image.image.url}}" data-small="{{image.image.url}}" data-medium="{{image.image.url}}" data-large="{{image.image.url}}" data-retina="{{image.image.url}}">
+							</div>
+							{% endfor %}
+
+						</div>
+						<div class="sp-thumbnails">
+							{% for image in images %}
+									<img alt="Image" class="sp-thumbnail" src="{{image.image.url}}">
+							{% endfor %}
+						</div>
+					</div>
+
+					<hr>
+
+					<div class="row">
+						<div class="col-md-3">
+							<h3>Sobre</h3>
+							<h4>{{event.title}}</h4>
+						</div>
+						<div class="col-md-9">
+							<p>
+								{{event.description}}
+							</p>
+							<!-- End row  -->
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="col-md-3">
+							<h3>Patrocinadores </h3>
+						</div>
+						<div class="col-md-9">
+							{% for sponsor in sponsors %}
+								<div class="col-md-4">
+									<img src="{{sponsor.logo.url}}" width="100%" height="100px" alt="{{sponsor.title}}">
+								</div>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+
+
+				<div class="col-md-8 tabcontent dnone" id="guest">
+					{% for guest in guests %}
+						<div class="col-md-4" style="position:relative;">
+								<img src="{{guest.image.url}}" width="100%" height="200px" alt="{{guest.name}}">
+								<div style="background-color: rgba(0,0,0,0.6); position:absolute; top:81%; width: 88%;" >
+									<h4 style="color:white; margin-left:5px;">{{guest.name}}</h4>
+								</div>
+
+								{% if guest.facebook %}
+									<a style="background-color:#0084b4; border:none; padding:8px 8px; border-radius:50%; position:absolute; top:18%; color:white; font-size:1.2em; left:85%;" href="{{guest.facebook}}"><i class="icon-facebook"></i></a>
+								{% endif %}
+
+								{% if guest.twitter %}
+									<a style="background-color:#0084b4; border:none; padding:8px 8px; border-radius:50%; position:absolute; top:-2%; color:white; font-size:1.2em; left:85%;" href="{{guest.twitter}}"><i class="icon-twitter"></i></a>
+								{% endif %}
+
+						</div>
+					{% endfor %}
+				</div>
+
+				<div class="col-md-8 tabcontent dnone" id="schedule">
+					<h1>Schedule</h1>
+				</div>
+
+					<div class="col-md-8 tabcontent dnone" id="galery">
+							<h2>Galeria de {{event.title}}</h2>
+							<div id="Img_carousel2" class="slider-pro">
+								<div class="sp-slides">
+									{% for image in gallery %}
+									<div class="sp-slide">
+										<img alt="Image" class="sp-image" src="{{image.image.url}}" data-src="{{image.image.url}}" data-small="{{image.image.url}}" data-medium="{{image.image.url}}" data-large="{{image.image.url}}" data-retina="{{image.image.url}}">
+									</div>
+									{% endfor %}
+
+								</div>
+								<div class="sp-thumbnails">
+									{% for image in gallery %}
+											<img alt="Image" class="sp-thumbnail" src="{{image.image.url}}">
+									{% endfor %}
+								</div>
+							</div>
+					</div>
+
+				<div class="col-md-8 tabcontent dnone" id="ticket">
+					<h1 class="text-center">Tickets</h1>
+					<div class="form_title">
+						<h3><strong>1</strong>Selecciona el ticket</h3>
+						<p>
+							Cada ticket
+						</p>
+					</div>
+					<div class="step">
+						<div class="row">
+							<div class="col-md-6 col-sm-6">
+								<label for="ticketshop">Ticket</label>
+								<select id="ticketshop" class="selectpicker form-control" onchange="selectTicket()">
+									{% for ticket in tickets  %}
+										<option value="{{forloop.counter0}}" >{{ticket.title}}</option>
+									{% endfor %}
+								</select>
+								<br>
+								<label>Info</label>
+								<p id="description_ticket">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et</p>
+								<h3 id="price_ticket">$35000</h3>
+								<br>
+								<label for="quantityticket">Cantidad</label>
+								<div class="numbers-row">
+									<input type="text" value="1" id="quantityticket" class="qty2 form-control" name="quantity">
+								</div>
+								<br>
+								<button type="button" class="btn_full" name="button" onclick="addTicketList()" >Añadir</button>
+							</div>
+
+
+							<div class="col-md-6 col-sm-6">
+								<table class="table">
+							    <thead>
+							      <tr>
+							        <th>Ticket</th>
+							        <th>Cantidad</th>
+							        <th>Total</th>
+							      </tr>
+							    </thead>
+							    <tbody id="ticketslist">
+							    </tbody>
+							  </table>
+								<h3>Total: $<span id="buy_total">0</span></h3>
+								<input type="hidden" id="buy_total_usd">
+							</div>
+						</div>
+					</div>
+						<div class="form_title">
+							<h3><strong>2</strong>Tus Datos</h3>
+							<p>
+								Si estas logueado se generan de manera automatica
+							</p>
+						</div>
+						<div class="step">
+							<div class="row">
+								<div class="col-md-6 col-sm-6">
+									<div class="form-group">
+										<label>Nombres</label>
+										<input type="text" value="{{user.first_name}}"  class="form-control" id="firstname_user" name="firstname_booking">
+									</div>
+								</div>
+								<div class="col-md-6 col-sm-6">
+									<div class="form-group">
+										<label>Apellidos</label>
+										<input type="text" value="{{user.last_name}}"  class="form-control" id="lastname_user" name="lastname_booking">
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6 col-sm-6">
+									<div class="form-group">
+										<label>Email</label>
+										<input type="email" value="{{user.email}}"  id="email_booking" name="email_user" class="form-control">
+									</div>
+								</div>
+								<div class="col-md-6 col-sm-6">
+									<div class="form-group">
+										<label>Confirm email</label>
+										<input type="email" value="{{user.email}}"  id="email_booking_2" name="email_user" class="form-control">
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6 col-sm-6">
+									<div class="form-group">
+										<label>Telephone</label>
+										<input type="text"  value="{{user.userinfomodel.cell_phone}}" id="telephone_booking" name="telephone_booking" class="form-control">
+									</div>
+								</div>
+							</div>
+						</div>
+						<!--End step -->
+
+						<div class="form_title">
+							<h3><strong>3</strong>Metodo de pago</h3>
+							<p>
+								Selecciona tu metodo de pago favorito.
+							</p>
+						</div>
+						<div class="step">
+							<div class="col-md-4" id="paypal-button-container"></div>
+						</div>
+						<!--End step -->
+						<br>
+						<div id="policy">
+							<h4>Terminos y condiciones</h4>
+							<div class="form-group">
+								<p>Al dar click en comprar estara aceptando nuestros terminos y condiciones</p>
+							</div>
+						</div>
+				</div>
+
+				<!--End  single_tour_desc-->
+
+				<aside class="col-md-4">
+					<div class="box_style_1 ">
+						<h3 class="inner">
+							- Sobre el evento -
+							{% if event.privacy %}<i class="icon-lock" title="Este evento es privado, no te permitira comprar tickets o asistir, hasta que un administrador del evento confirme tu solicitud de asistencia."></i>{% endif %}
+						</h3>
+						<div class="row">
+							<div class="col-md-6 col-sm-6">
+								<div class="form-group">
+									<label><i class="icon-calendar-7"></i> Fecha de inicio</label>
+									<p>{{event.start_date}}</p>
+								</div>
+							</div>
+							<div class="col-md-6 col-sm-6">
+								<div class="form-group">
+									<label><i class=" icon-clock"></i> Hora Inicio</label>
+									<p>{{event.start_time}}</p>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6 col-sm-6">
+								<div class="form-group">
+									<label><i class="icon-calendar-7"></i> Fecha final</label>
+									<p>{{event.end_date}}</p>
+								</div>
+							</div>
+							<div class="col-md-6 col-sm-6">
+								<div class="form-group">
+									<label><i class=" icon-clock"></i> Hora fin</label>
+									<p>{{event.end_time}}</p>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12 col-sm-12">
+								<div class="form-group">
+									<label><i class="icon-location-4"></i> Lugar</label>
+									<p>{{event.location_address}}</p>
+								</div>
+							</div>
+						</div>
+
+						{% if user.username %}
+							{% if event.privacy %}
+								{% if request_assistance %}
+									<button type="button" class="btn_full" name="button" onclick="openPage(event,'ticket')">Comprar Tickets</button>
+								{% else %}
+									<button type="button" id="reqassis" class="btn_full" name="button" onclick="RequestAssistance()" ><i class=" icon-user-add"></i> Solicitar Asistencia</button>
+								{% endif %}
+							{% else %}
+								<button type="button" class="btn_full" name="button" onclick="openPage(event,'ticket')">Comprar Tickets</button>
+							{% endif %}
+						{% else %}
+							<a class="btn_full" href="{% url 'register' %}">Registrate</a>
+						{% endif %}
+					</div>
+					<!--/box_style_1 -->
+
+					{% if event.show_map %}
+					<div class="box_style_4">
+
+						<div id="map_event">
+						</div>
+
+					</div>
+					{% endif %}
+
+					<div class="box_style_4">
+						<a href="javascript: void(0);" class="btnShare btfacebook" onclick="window.open('http://www.facebook.com/sharer.php?u=http://104.131.71.163{% url 'events:event_view_home' 'home' event.id %}','ventanacompartir', 'toolbar=0, status=0, width=650, height=450');"><i class="icon-facebook-squared-1"></i>Compartir</a>
+						<a href="javascript: void(0);" class="btnShare bttwitter" onclick="window.open('http://twitter.com/home?status=http://104.131.71.163{% url 'events:event_view_home' 'home' event.id %}','ventanacompartir', 'toolbar=0, status=0, width=650, height=450');"><i class="icon-twitter-squared"></i>Compartir</a>
+					</div>
+
+				</aside>
+			</div>
+			<!--End row -->
+		</div>
+		<!--End container -->
+        <div id="overlay"></div>
+		<!-- Mask on input focus -->
+
+	</main>
+	<!-- End main -->
+
+	{% include "base/footer.html" %}
+
+	<!-- End modal review -->
+
+	<!-- Common scripts -->
+	<script src="{% static 'js/home/jquery-1.11.2.min.js' %}"></script>
+  <script src="{% static 'js/home/common_scripts_min.js' %}"></script>
+  <script src="{% static 'js/home/functions.js' %}"></script>
+
+	<!-- Specific scripts -->
+  <script src="{% static 'js/home/icheck.js' %}"></script>
+	<script>
+		$('input').iCheck({
+			checkboxClass: 'icheckbox_square-grey',
+			radioClass: 'iradio_square-grey'
+		});
+	</script>
+	<!-- Date and time pickers -->
+	<script src="{% static 'js/home/jquery.sliderPro.min.js' %}"></script>
+	<script type="text/javascript">
+		$(document).ready(function ($) {
+			$('#Img_carousel').sliderPro({
+				width: 960,
+				height: 500,
+				fade: true,
+				arrows: true,
+				buttons: false,
+				fullScreen: false,
+				smallSize: 500,
+				startSlide: 0,
+				mediumSize: 1000,
+				largeSize: 3000,
+				thumbnailArrows: true,
+				autoplay: false
+			});
+		});
+
+		function showGalery() {
+			$('#Img_carousel2').sliderPro({
+				width: 960,
+				height: 500,
+				fade: true,
+				arrows: true,
+				buttons: false,
+				fullScreen: false,
+				smallSize: 500,
+				startSlide: 0,
+				mediumSize: 1000,
+				largeSize: 3000,
+				thumbnailArrows: true,
+				autoplay: false
+			});
+		}
+	</script>
+
+	<!-- Date and time pickers -->
+ <script src="{% static 'js/home/bootstrap-datepicker.js' %}"></script>
+ <script src="{% static 'js/home/bootstrap-timepicker.js' %}"></script>
+	<script>
+		$('input.date-pick').datepicker('setDate', 'today');
+		$('input.time-pick').timepicker({
+			minuteStep: 15,
+			showInpunts: false
+		})
+	</script>
+
+	<!--Review modal validation -->
+	<script src="{% static 'js/home/validate.js' %}"></script>
+
+	<!-- Map -->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0ZfQL0Mxc4bnZnAtDk8bNL0-DZ18MkbM" type="text/javascript"></script>
+	<script>
+		$(function(){
+			var mapOptions = {
+				zoom: 17,
+				center: new google.maps.LatLng("{{event.location_address_latitude}}","{{event.location_address_longitude}}"),
+				mapTypeId: google.maps.MapTypeId.ROADMAP,
+
+				mapTypeControl: false,
+				mapTypeControlOptions: {
+					style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+					position: google.maps.ControlPosition.LEFT_CENTER
+				},
+				panControl: false,
+				panControlOptions: {
+					position: google.maps.ControlPosition.TOP_RIGHT
+				},
+				zoomControl: true,
+				zoomControlOptions: {
+					style: google.maps.ZoomControlStyle.LARGE,
+					position: google.maps.ControlPosition.RIGHT_BOTTOM
+				},
+				 scrollwheel: false,
+				scaleControl: false,
+				scaleControlOptions: {
+					position: google.maps.ControlPosition.LEFT_CENTER
+				},
+				streetViewControl: true,
+				streetViewControlOptions: {
+					position: google.maps.ControlPosition.RIGHT_BOTTOM
+				},
+				styles: [
+											 {
+					"featureType": "landscape",
+					"stylers": [
+						{
+							"hue": "#FFBB00"
+						},
+						{
+							"saturation": 43.400000000000006
+						},
+						{
+							"lightness": 37.599999999999994
+						},
+						{
+							"gamma": 1
+						}
+					]
+				},
+				{
+					"featureType": "road.highway",
+					"stylers": [
+						{
+							"hue": "#FFC200"
+						},
+						{
+							"saturation": -61.8
+						},
+						{
+							"lightness": 45.599999999999994
+						},
+						{
+							"gamma": 1
+						}
+					]
+				},
+				{
+					"featureType": "road.arterial",
+					"stylers": [
+						{
+							"hue": "#FF0300"
+						},
+						{
+							"saturation": -100
+						},
+						{
+							"lightness": 51.19999999999999
+						},
+						{
+							"gamma": 1
+						}
+					]
+				},
+				{
+					"featureType": "road.local",
+					"stylers": [
+						{
+							"hue": "#FF0300"
+						},
+						{
+							"saturation": -100
+						},
+						{
+							"lightness": 52
+						},
+						{
+							"gamma": 1
+						}
+					]
+				},
+				{
+					"featureType": "water",
+					"stylers": [
+						{
+							"hue": "#0078FF"
+						},
+						{
+							"saturation": -13.200000000000003
+						},
+						{
+							"lightness": 2.4000000000000057
+						},
+						{
+							"gamma": 1
+						}
+					]
+				},
+				{
+					"featureType": "poi",
+					"stylers": [
+						{
+							"hue": "#00FF6A"
+						},
+						{
+							"saturation": -1.0989010989011234
+						},
+						{
+							"lightness": 11.200000000000017
+						},
+						{
+							"gamma": 1
+						}
+					]
+				}
+				]
+			};
+
+			document.getElementById("map_event").style.width = "100%";
+			document.getElementById("map_event").style.height = "300px";
+
+			var mapObject = new google.maps.Map(document.getElementById('map_event'), mapOptions);
+			var marker = new google.maps.Marker({
+				position: {lat: parseFloat("{{event.location_address_latitude}}"),lng: parseFloat("{{event.location_address_longitude}}")},
+				map: mapObject
+			});
+		});
+
+		function RequestAssistance() {
+			$.ajax({
+				 url : "{% url 'events:reqassistance' %}", // the endpoint
+				 type : "POST", // http method
+				 data : {
+					  csrfmiddlewaretoken : "{{ csrf_token }}",
+						event_id : "{{event.id}}",
+					}, // data sent with the post request
+
+				 // handle a successful response
+				 success : function(json) {
+					 if(json.status == true){
+						 $('#reqassis').text('Esperando Confirmacion');
+						 $('#reqassis').attr("disabled", true);
+					 }
+				 },
+
+				 // handle a non-successful response
+				 error : function(xhr,errmsg,err) {
+					 console.log(errmsg);
+				 }
+		 });
+		}
+	</script>
+	<script src="{% static 'js/home/infobox.js' %}"></script>
+
+
+	<script>
+		function openPage(evt, pageName) {
+			// Declare all variables
+			var i, tabcontent, tablinks;
+
+			// Get all elements with class="tabcontent" and hide them
+			tabcontent = document.getElementsByClassName("tabcontent");
+			for (i = 0; i < tabcontent.length; i++) {
+					tabcontent[i].style.display = "none";
+			}
+
+			// Get all elements with class="tablinks" and remove the class "active"
+			tablinks = document.getElementsByClassName("tablinks");
+			for (i = 0; i < tablinks.length; i++) {
+					tablinks[i].className = tablinks[i].className.replace(" active", "");
+			}
+
+			// Show the current tab, and add an "active" class to the button that opened the tab
+			document.getElementById(pageName).style.display = "block";
+			evt.currentTarget.className += " active";
+	}
+	</script>
+
+	<script>
+		$(function() {
+			tickets = [
+				{% for ticket in tickets %}
+					{
+						id : "{{ticket.id}}",
+						title: "{{ticket.title}}",
+						price: "{{ticket.price}}",
+						description: "{{ticket.description}}"
+					},
+				{% endfor %}
+			];
+
+			$('#description_ticket').text(tickets[0].description);
+			$('#price_ticket').text("$"+tickets[0].price+"0");
+		});
+
+		function selectTicket() {
+			$('#description_ticket').text(this.tickets[$('#ticketshop').val()].description);
+			$('#price_ticket').text("$"+this.tickets[$('#ticketshop').val()].price+"0");
+		}
+
+		var totalist=[];
+
+		function addTicketList() {
+			total = parseInt($('#quantityticket').val()) * parseInt(this.tickets[$('#ticketshop').val()].price);
+			totalitem = 0;
+			this.totalist.push(total);
+			for (var i = 0; i < this.totalist.length; i++) {
+				totalitem += this.totalist[i];
+			}
+
+			$('#buy_total').text(totalitem);
+			$('#buy_total_usd').val((totalitem/3000).toFixed(2));
+
+			$('#ticketslist').append('<tr><td>'+this.tickets[$('#ticketshop').val()].title+'</td><td>'+$('#quantityticket').val()+'</td><td>'+total+'</td></tr>');
+		}
+
+
+	</script>
+
+
+	<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+	<script>
+
+	    // Render the PayPal button
+
+	    paypal.Button.render({
+
+	        // Set your environment
+
+	        env: 'sandbox', // sandbox | production
+
+	        // PayPal Client IDs - replace with your own
+	        // Create a PayPal app: https://developer.paypal.com/developer/applications/create
+
+	        client: {
+	            sandbox:    'AZDxjDScFpQtjWTOUtWKbyN_bDt4OgqaF4eYXlewfBP4-8aqX3PiV8e1GWU6liB2CUXlkA59kJXE7M6R',
+	            production: 'Aa6fwF17IDc9BHSVNYSwqvjdH517pnqv2qvELT3iFuK1ok7M5l8WUmsmYzCgUV67W2vI4q-t0dRn47FA'
+	        },
+
+	        // Set to 'Pay Now'
+
+	        commit: true,
+
+	        // Wait for the PayPal button to be clicked
+
+	        payment: function(actions) {
+	            // Make a client-side call to the REST api to create the payment
+	            return actions.payment.create({
+	                transactions: [
+	                    {
+	                        amount: { total: $('#buy_total_usd').val(), currency: 'USD' }
+	                    }
+	                ]
+	            });
+	        },
+
+	        // Wait for the payment to be authorized by the customer
+
+	        onAuthorize: function(data, actions) {
+
+	            // Execute the payment
+							console.log(data);
+							console.log(actions);
+	            return actions.payment.execute().then(function() {
+	                window.alert('Payment Complete!');
+	            });
+	        }
+
+	    }, '#paypal-button-container');
+
+	</script>
+
+
+</body>
+
+</html>

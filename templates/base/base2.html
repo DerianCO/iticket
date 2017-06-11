@@ -1,0 +1,145 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="Citytours - Premium site template for city tours agencies, transfers and tickets.">
+    <meta name="author" content="Ansonika">
+    <title>{{config.title}}</title>
+
+    <!-- Favicons-->
+    <link rel="shortcut icon" href="{% static 'img/home/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" type="image/x-icon" href="img/apple-touch-icon-57x57-precomposed.png">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="{% static 'img/home/apple-touch-icon-72x72-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114" href="{% static 'img/home/apple-touch-icon-114x114-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144" href="{% static 'img/home/apple-touch-icon-144x144-precomposed.png' %}">
+
+    <!-- CSS -->
+    <link href="{% static 'css/home/base.css' %}" rel="stylesheet">
+
+    <!-- SPECIFIC CSS -->
+    <link href="{% static 'css/home/admin.css' %}" rel="stylesheet">
+    <link href="{% static 'css/home/jquery.switch.css' %}" rel="stylesheet">
+
+    {% include "base/style.html" %}
+
+    <!-- Google web fonts -->
+   <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+   <link href='http://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
+   <link href='http://fonts.googleapis.com/css?family=Lato:300,400' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="sk-spinner sk-spinner-wave">
+            <div class="sk-rect1"></div>
+            <div class="sk-rect2"></div>
+            <div class="sk-rect3"></div>
+            <div class="sk-rect4"></div>
+            <div class="sk-rect5"></div>
+        </div>
+    </div>
+    <!-- End Preload -->
+
+    <div class="layer"></div>
+    <!-- Mobile menu overlay mask -->
+    <!-- Header================================================== -->
+      <header>
+          <div id="top_line">
+              <div class="container">
+                  <div class="row">
+                      <div class="col-md-6 col-sm-6 col-xs-6"></div>
+
+                      <div class="col-md-6 col-sm-6 col-xs-6">
+                          <ul id="top_links">
+                              {% if user.is_authenticated %}
+                                  <li><a href="{% url 'profile:home' user.username %}" id="wishlist_link">{{ user.username }}</a></li>
+                                  <li><a href="{% url 'logout' %}?next={% url 'home' %}" id="wishlist_link">Cerrar Sesíon</a></li>
+                              {% else %}
+                                  <li>
+                                      <div class="dropdown dropdown-access">
+                                          <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="access_link">Iniciar Sesión</a>
+                                          <div class="dropdown-menu">
+                                              <div class="row">
+                                                  <div class="col-md-6 col-sm-6 col-xs-6">
+                                                      <a href="{% url 'social:begin' 'facebook' %}" class="bt_facebook">
+                                                          <i class="icon-facebook"></i>Facebook </a>
+                                                  </div>
+                                                  <div class="col-md-6 col-sm-6 col-xs-6">
+                                                      <a href="{% url 'social:begin' 'twitter' %}" class="bt_paypal">
+                                                          <i class="icon-twitter"></i>Twitter </a>
+                                                  </div>
+                                              </div>
+                                              <div class="login-or">
+                                                  <hr class="hr-or">
+                                                  <span class="span-or">ó</span>
+                                              </div>
+                                              <div>
+                                              <form method="post" action="{% url 'login' %}">
+                                                {% csrf_token %}
+                                                  <div class="form-group">
+                                                     <input type="text" class="form-control" id="inputUsernameEmail" name="username" placeholder="Usuario">
+                                                  </div>
+                                                  <div class="form-group">
+                                                      <input type="password" class="form-control" id="inputPassword" name="password" placeholder="Contraseña">
+                                                  </div>
+                                                  <a id="forgot_pw" href="{% url 'password_reset' %}">Olvide mi contraseña</a>
+                                                  <input type="submit" name="Sign_in" value="Entrar" id="Sign_in" class="button_drop">
+                                                  <input type="submit" name="Sign_up" value="Registro" id="Sign_up" class="button_drop outline">
+                                              </form>
+                                              </div>
+                                          </div>
+                                      </div><!-- End Dropdown access -->
+                                  </li>
+                              {% endif %}
+                          </ul>
+                      </div>
+                  </div><!-- End row -->
+              </div><!-- End container-->
+          </div><!-- End top line-->
+
+          <div class="container">
+              <div class="row">
+                  <div class="col-md-3 col-sm-3 col-xs-3">
+                      <div id="logo_home">
+                      	<h1><a href="{% url 'home' %}" title="City tours travel template">City Tours travel template</a></h1>
+                      </div>
+                  </div>
+                  <nav class="col-md-9 col-sm-9 col-xs-9">
+                      <a class="cmn-toggle-switch cmn-toggle-switch__htx open_close" href="javascript:void(0);"><span>Menu mobile</span></a>
+                      <div class="main-menu">
+                          <div id="header_menu">
+                              <img src="{% static 'img/home/logo_sticky.png' %}" width="160" height="34" alt="City tours" data-retina="true">
+                          </div>
+                          <a href="#" class="open_close" id="close_in"><i class="icon_set_1_icon-77"></i></a>
+                          
+                      </div><!-- End main-menu -->
+                  </nav>
+              </div>
+          </div><!-- container -->
+      </header><!-- End Header -->
+
+      {% block content %}
+
+      {% endblock %}
+
+{% include "base/footer.html" %}
+
+<div id="toTop"></div><!-- Back to top button -->
+
+<!-- Common scripts -->
+<script src="{% static 'js/home/jquery-1.11.2.min.js' %}"></script>
+<script src="{% static 'js/home/common_scripts_min.js' %}"></script>
+<script src="{% static 'js/home/functions.js' %}"></script>
+
+
+{% block js_specific %}
+
+{% endblock %}
+
+  </body>
+</html>

@@ -1,0 +1,484 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="Citytours - Premium site template for city tours agencies, transfers and tickets.">
+    <meta name="author" content="Ansonika">
+    <title>{{config.title}} | {{user.username}}</title>
+
+    <!-- Favicons-->
+    <link rel="shortcut icon" href="{% static 'img/home/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" type="image/x-icon" href="img/apple-touch-icon-57x57-precomposed.png">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="{% static 'img/home/apple-touch-icon-72x72-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114" href="{% static 'img/home/apple-touch-icon-114x114-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144" href="{% static 'img/home/apple-touch-icon-144x144-precomposed.png' %}">
+
+    <!-- CSS -->
+    <link href="{% static 'css/home/base.css' %}" rel="stylesheet">
+    {% include "base/style.html" %}
+    <!-- SPECIFIC CSS -->
+    <link href="{% static 'css/home/admin.css' %}" rel="stylesheet">
+    <link href="{% static 'css/home/jquery.switch.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/home/select.css' %}">
+
+    <!-- Google web fonts -->
+   <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+   <link href='http://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
+   <link href='http://fonts.googleapis.com/css?family=Lato:300,400' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="sk-spinner sk-spinner-wave">
+            <div class="sk-rect1"></div>
+            <div class="sk-rect2"></div>
+            <div class="sk-rect3"></div>
+            <div class="sk-rect4"></div>
+            <div class="sk-rect5"></div>
+        </div>
+    </div>
+    <!-- End Preload -->
+
+    <div class="layer"></div>
+    <!-- Mobile menu overlay mask -->
+
+     <!-- Header================================================== -->
+    <header>
+        <div id="top_line">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 col-sm-6 col-xs-6"></div>
+
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <ul id="top_links">
+                            <li>
+                                <div class="dropdown dropdown-access">
+                                    <a href="{% url 'logout' %}?next={% url 'home' %}" id="access_link">Cerrar Sesión</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div><!-- End row -->
+            </div><!-- End container-->
+        </div><!-- End top line-->
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-sm-3 col-xs-3">
+                    <div id="logo">
+                        <a href="{% url 'home' %}"><img src="{{config.logo.url}}" width="100" height="60" alt="{{config.title}}" data-retina="true" class="logo_normal"></a>
+                        <a href="{% url 'home' %}"><img src="{{config.logo.url}}" width="100" height="60" alt="{{config.title}}" data-retina="true" class="logo_sticky"></a>
+                    </div>
+                </div>
+                <nav class="col-md-9 col-sm-9 col-xs-9">
+                    <a class="cmn-toggle-switch cmn-toggle-switch__htx open_close" href="javascript:void(0);"><span>Menu mobile</span></a>
+                    <div class="main-menu">
+                        <div id="header_menu">
+                            <img src="{{config.logo.url}}" width="100" height="60" alt="{{config.title}}" data-retina="true">
+                        </div>
+                        <a href="#" class="open_close" id="close_in"><i class="icon_set_1_icon-77"></i></a>
+
+                        {% include "base/nav.html" %}
+                    </div><!-- End main-menu -->
+                </nav>
+            </div>
+        </div><!-- container -->
+    </header><!-- End Header -->
+
+
+<section class="parallax-window" data-parallax="scroll" data-image-src="{{config.banner_one.url}}" data-natural-width="1400" data-natural-height="470">
+    <div class="parallax-content-1">
+        <div class="animated fadeInDown">
+        	<h1>{{ user.username }}</h1>
+        	<p>{{user.email}}</p>
+        </div>
+    </div>
+</section><!-- End section -->
+
+<div id="position">
+    	<div class="container">
+                <ul>
+                    <li><a href="{% url 'home' %}">Inicio</a></li>
+                    <li><a href="{% url 'profile:home' user.username %}">Perfil</a></li>
+                </ul>
+        </div>
+</div><!-- End Position -->
+
+<div class="margin_60 container">
+	<div id="tabs" class="tabs">
+		<nav>
+		<ul>
+      <li><a href="#section-1" class="icon-ticket"><span>Mis tickets</span></a></li>
+			<li><a href="#section-2" class="icon-megaphone"><span>Eventos</span></a></li>
+			<li><a href="#section-3" class="icon-money"><span>Ventas</span></a></li>
+			<li><a href="#section-4" class="icon-profile"><span>Profile</span></a></li>
+		</ul>
+		</nav>
+		<div class="content">
+      <section id="section-1">
+        {% if mytickets %}
+
+        {% else %}
+          <p style="text-align:center; font-weight:bold; font-size:2em;color: rgba(0,0,0,.5);">No tienes tickets</p>
+          <p class="text-center" style="color: rgba(0,0,0,.3);">Cuando compres un ticket o adquieras un ticket de un evento gratuito,<br> podras encontrarlo en esta seccion, que esperas tenemos muchos eventos gratuitos!!</p>
+          <p class="text-center"><a href="#" class="btn_1 blue">Ver eventos</a></p>
+        {% endif %}
+      </section><!-- End section 1 -->
+
+			<section id="section-2">
+        {% if data_events %}
+          <a href="{% url 'events:new' %}" class="btn_1 green ">Crear un evento</a>
+        {% endif %}
+        <br><br>
+			<div class="row">
+                {% if data_events %}
+                    {% for de in data_events %}
+                        <div id="event-{{de.event.id}}" class="col-md-4 col-sm-6">
+                            <div class="hotel_container">
+                                <div class="img_container">
+                                    <a href="{% url 'events:dashboard' de.event.id %}">
+                                    <img src="{{ de.image.image.url }}" style="width: 100%; height: 250px;" class="img-responsive" alt="Image">
+                                    {% if de.event.status %}
+                                        <div class="ribbon public_event">
+                                        </div>
+                                    {% else %}
+                                        <div class="ribbon not_public_event">
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="short_info hotel">
+                                         <i class="{{de.event.type_event.icon}}"></i>{{ de.event.type_event.tile }}<span class="price"><sup>Desde $</sup>{{ de.ticket.price }}0</span>
+                                    </div>
+                                    </a>
+                                </div>
+                                <div class="hotel_title">
+                                    <h3><strong>{{ de.event.title }}</strong></h3>
+                                    <div class="rating">
+                                        <i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star-empty"></i>
+                                    </div><!-- end rating -->
+                                </div>
+                            </div><!-- End box tour -->
+                            <button style="background-color: #FE2E2E; border:2px solid white; border-radius:50%; padding:5px 7px; color:white; position:absolute; top:-3%; left:88%; " type="button" name="button" onclick="Delete({{de.event.id}})"><span class="icon-trash-1"></span></button>
+                        </div><!-- End col-md-6 -->
+                    {% endfor %}
+
+                 {% else %}
+                     <p style="text-align:center; font-weight:bold; font-size:2em;color: rgba(0,0,0,.5);">No tienes eventos</p>
+                     <p class="text-center" style="color: rgba(0,0,0,.3);">Puedes crear un evento nuevo totalmente gratis,<br>en caso de que desees cobrar por las entradas, <br>te recomendamos leer nuestros <a href="#">terminos y condiciones</a>.</p>
+                     <p class="text-center"><a href="{% url 'events:new' %}" class="btn_1 blue">Empezar un evento</a></p>
+                {% endif %}
+
+
+			</div><!-- End row -->
+			</section><!-- End section 2 -->
+
+
+      <section id="section-3">
+      {% if group_sheller %}
+            {% for gs in group_sheller %}
+              <div class="strip_booking">
+                <div class="row">
+                  <div class="col-md-6 col-sm-5">
+                    <h3 class="hotel_booking">{{gs.group.title}}<span>Lider: {{gs.group.boss.username}}</span></h3>
+                  </div>
+                  <div class="col-md-2 col-sm-3">
+                    <ul class="info_booking">
+                      <li><strong>Evento</strong> {{gs.group.event.title}}</li>
+                      <li><strong>Organizador</strong>{{gs.group.event.user.username}}</li>
+                    </ul>
+                  </div>
+                  <div class="col-md-2 col-sm-2">
+                    <div class="booking_buttons">
+                      <a href="#sellTicketModal" class="btn_2" onclick="getTickets({{gs.group.event.id}},{{gs.sheller.id}})"  data-toggle="modal">Vender Tickets</a>
+                    </div>
+                  </div>
+                </div><!-- End row -->
+              </div><!-- End strip booking -->
+            {% endfor %}
+      {% else %}
+        <p style="text-align:center; font-weight:bold; font-size:2em;color: rgba(0,0,0,.5);">No haces parte de un grupo de ventas</p>
+      {% endif %}
+      </section><!-- End section 3 -->
+
+
+      <!-- MODAL SELL -->
+      <div class="modal fade" id="sellTicketModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <!-- HEADER MODAL -->
+            <div class="modal-header">
+              <button type="button" name="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title">Vender Ticket</h4>
+            </div>
+            <!-- BODY MODAL -->
+            <div class="modal-body">
+              <div class="container-fluid">
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="userticket">Usuario</label>
+                    <select class="selectpicker" id="userticket" data-live-search="true" onchange="changeOptionsSell()">
+                        {% for userl in users %}
+                          <option value="{{userl.id}}" data-tokens="{{userl.email}},{{userl.username}}">{{userl.username}}</option>
+                        {% endfor %}
+                    </select>
+                    <br><br>
+                    <label for="ticket">Ticket</label>
+                    <select class="form-control" name="ticket" id="ticket" onchange="changeOptionsSell()">
+                    </select>
+                    <br>
+                    <label for="methodSell">Metodo</label>
+                    <select class="form-control" name="methodSell" id="methodSell" onchange="changeOptionsSell()">
+                      {% for method in methods %}
+                        <option value="{{method.id}}">{{method.title}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <h2 id="usersell" class="text-right">Nombre usuario</h2>
+                    <p id="emailsell" class="text-right">Correo electronico</p>
+                    <h4 id="ticketsell" class="text-right">Ticket</h4>
+                    <h4 id="methodsell" class="text-right">Metodo de pago</h4>
+                    <h3 id="totalsell" class="text-right">Total: $0</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FOOTER MODAL -->
+            <div class="modal-footer">
+              <button type="button"  onclick="sellTicket()" class="btn_1 green" name="button">Generar Venta</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+			<section id="section-4">
+			<div class="row">
+				<div class="col-md-6 col-sm-6">
+					<h4>Your profile</h4>
+					<ul id="profile_summary">
+						<li>Username <span>{{ user.username }}</span></li>
+                        <li>Email <span>{{ user.email }}</span></li>
+						<li>First name <span>{{ user.first_name }}</span></li>
+						<li>Last name <span>{{ user.last_name }}</span></li>
+						<li>Phone number <span>{{ userinfo.home_phone }}</span></li>
+						<li>Date of birth <span>{{ userinfo.birth_date }}</span></li>
+						<li>Street address <span>{{ userinfo.address }}</span></li>
+						<li>Town/City <span>{{ userinfo.city }}</span></li>
+						<li>Zip code <span>{{ userinfo.postal_code }}</span></li>
+						<li>Country <span>{{ userinfo.country }}</span></li>
+					</ul>
+				</div>
+				<div class="col-md-6 col-sm-6">
+					<img src="{{ userinfo.image_profile.url }}"  width="250px" height="250px" alt="Image" class="img-responsive styled profile_pic">
+				    </p>
+			    </div>
+		    </div><!-- End row -->
+
+            <div class="row">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for f in form %}
+                        <div class="col-md-6">
+                            {{ f.label }}
+                            {{ f }}
+                        </div>
+                    {% endfor %}
+                    <button class="btn_1 green btn-block" type="submit">Guardar Cambios</button>
+                </form>
+            </div>
+		<div class="divider"></div>
+        </section><!-- End section 4 -->
+
+		</div><!-- End content -->
+	</div><!-- End tabs -->
+</div><!-- end container -->
+
+{% include "base/footer.html" %}
+
+<div id="toTop"></div><!-- Back to top button -->
+
+
+<!-- Common scripts -->
+<script src="{% static 'js/home/jquery-1.11.2.min.js' %}"></script>
+<script src="{% static 'js/home/common_scripts_min.js' %}"></script>
+<script src="{% static 'js/home/functions.js' %}"></script>
+
+ <!-- Specific scripts -->
+<script src="{% static 'js/home/bootstrap-notify.js' %}"></script>
+<script src="{% static 'js/home/select.js' %}"></script>
+<script src="{% static 'js/home/tabs.js' %}"></script>
+<script>new CBPFWTabs( document.getElementById( 'tabs' ) );</script>
+<script>
+	$('.wishlist_close_admin').on('click', function(c){
+		$(this).parent().parent().parent().fadeOut('slow', function(c){
+		});
+	});
+</script>
+
+<script>
+
+  var sheller = 0;
+  var tickets = [];
+  var users = [];
+  var methods = [];
+
+  function getTickets(id,idSheller) {
+    //change idSheller
+    this.sheller = idSheller;
+
+    $.ajax({
+        url : "{% url 'tickets:gettickets' %}",
+        type : "POST",
+        data : {
+          csrfmiddlewaretoken : '{{ csrf_token }}',
+          idEvent : id
+        },
+
+        success : function(json) {
+          tickets = json.tickets;
+          for (var ticket in json.tickets) {
+            $('#ticket').append('<option value="'+json.tickets[ticket].id+'">'+json.tickets[ticket].title+'</option>');
+          }
+        },
+
+        error : function(xhr,errmsg,err) {
+            $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                " <a href='#' class='close'>&times;</a></div>");
+            console.log(xhr.status + ": " + xhr.responseText);
+        }
+    });
+
+  }
+
+  function sellTicket() {
+
+    id_user = $('#userticket').val();
+    id_info = $('#ticket').val();
+    id_method = $('#methodSell ').val();
+
+
+    $.ajax({
+        url : "{% url 'tickets:sellticket' %}", // the endpoint
+        type : "POST", // http method
+        data : {
+          csrfmiddlewaretoken : '{{ csrf_token }}',
+          idUser : id_user,
+          idInfo: id_info,
+          idSheller: this.sheller,
+          idMethod: id_method,
+        }, // data sent with the post request
+
+        // handle a successful response
+        success : function(json) {
+          $.notify({
+            // options
+            title: "<h4>Ticket Generado de manera exitosa</h4> ",
+            message: "El ticket fue generado a nombre del usuario: "+json.username+" y se envio al correo electronico "+json.email
+          },{
+            // settings
+            type: 'info',
+            delay: 5000,
+            timer: 3000,
+            z_index: 9999,
+            showProgressbar: false,
+            placement: {
+              from: "bottom",
+              align: "right"
+            },
+            animate: {
+              enter: 'animated bounceInUp',
+              exit: 'animated bounceOutDown'
+            },
+          });
+        },
+
+        // handle a non-successful response
+        error : function(xhr,errmsg,err) {
+            $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+            console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+        }
+    });
+  }
+
+  function changeOptionsSell() {
+    this.users = [
+      {% for userl in users %}
+        {
+          'id' : '{{userl.id}}',
+          'username': '{{userl.username}}',
+          'email' : '{{userl.email}}',
+        },
+      {% endfor %}
+    ];
+
+    this.methods = [
+      {% for methodl in methods %}
+        {
+          'id' : '{{methodl.id}}',
+          'title': '{{methodl.title}}',
+        },
+      {% endfor %}
+    ];
+
+    id_user = $('#userticket').val();
+    for (userl of this.users) {
+      if (id_user == userl.id) {
+        $('#usersell').text(userl.username);
+        $('#emailsell').text(userl.email);
+      }
+    }
+
+    id_method = $('#methodSell ').val();
+    for (methodl of this.methods) {
+      if (id_method == methodl.id) {
+        $('#methodsell').text(methodl.title);
+      }
+    }
+
+    id_info = $('#ticket').val();
+    for (ticket of tickets) {
+        if (id_info == ticket.id) {
+          $('#ticketsell').text(ticket.title);
+          $('#totalsell').text('Total: $'+ticket.price);
+        }
+    }
+  }
+
+</script>
+
+<script>
+function Delete(id) {
+  conf = confirm("Desea eliminar este elemento?");
+  if(conf==true){
+    $.ajax({
+      url : "{% url 'events:destroy' %}" , // the endpoint
+      type : "POST", // http method
+      data : {
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        idEvent : id,
+      }, // data sent with the post request
+      // handle a successful response
+      success : function(json) {
+          console.log(json); // log the returned json to the console
+          $("#event-"+json.id).remove();
+      },
+
+      // handle a non-successful response
+      error : function(xhr,errmsg,err) {
+          console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+      }
+    });
+  }
+}
+</script>
+
+</body>
+</html>

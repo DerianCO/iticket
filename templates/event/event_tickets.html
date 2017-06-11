@@ -1,0 +1,70 @@
+{% extends "event/base/index.html" %}
+{% load staticfiles %}
+{% block title_section %}
+  Tickets
+{% endblock %}
+
+{% block li_section %}
+  <li><a href="{% url 'events:event_tickets' event.id %}">Tickets</a></li>
+{% endblock %}
+
+{% block container %}
+<div class="margin_30 container-fluid">
+  {% include "event/base/sidebar_nav_event.html" %}
+      <div class="col-md-6">
+          {% if model.count > 0 %}
+              {% for ticket in model %}
+                  <div class="panel col-md-4" style="border:none; background-color:transparent;position:relative;">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading" style="background-color:#0489B1; font-size:1.5em; color:white;">{{ ticket.title }}</div>
+                    <div class="panel-body">
+                      <p>{{ticket.description}}</p>
+                    </div>
+                    <div class="panel-footer" style="background-color:#0489B1;text-align:center;font-size:1.5em;color:white;">
+                      ${{ticket.price}}0
+                    </div>
+                    <button style="background-color: #FE2E2E; border:2px solid white; border-radius:50%; padding:5px 7px; color:white; position:absolute; top:-5%; left:85%; " type="button" name="button" onclick="Delete({{ticket.id}})"><span class="icon-trash-1"></span></button>
+                  </div>
+
+              {% endfor %}
+          {% endif %}
+
+      </div>
+      <div class="col-md-4">
+          <form method="post">
+              {% csrf_token %}
+              {{ form.as_p }}
+              <input type="submit" class="btn_full green" value="Guardar">
+          </form>
+      </div>
+</div><!-- end container -->
+{% endblock %}
+
+{% block js_specific %}
+<script>
+  function Delete(id) {
+    conf = confirm("Desea eliminar este elemento?");
+    if (conf==true) {
+      $.ajax({
+        url : "{% url 'events:event_delete' event.id %}" , // the endpoint
+        type : "POST", // http method
+        data : {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          model : 'ticket',
+          id_model : id,
+        }, // data sent with the post request
+        // handle a successful response
+        success : function(json) {
+            //console.log(json); // log the returned json to the console
+            $("#ticket-"+json.id).remove();
+        },
+
+        // handle a non-successful response
+        error : function(xhr,errmsg,err) {
+            console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+        }
+      });
+    }
+  }
+</script>
+{% endblock %}

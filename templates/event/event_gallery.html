@@ -1,0 +1,61 @@
+{% extends "event/base/index.html" %}
+
+{% block title_section %}
+  Galeria
+{% endblock %}
+
+{% block li_section %}
+  <li><a href="{% url 'events:event_gallery' event.id %}">Galeria</a></li>
+{% endblock %}
+
+{% block container %}
+  <div class="margin_30 container-fluid">
+    {% include "event/base/sidebar_nav_event.html" %}
+        <div class="col-md-6">
+            {% if model.count > 0 %}
+                {% for image in model %}
+                    <div class="col-md-4" style="position:relative;" id="image-{{image.id}}">
+                        <img src="{{ image.image.url }}" alt="{{image.image.id}}" width="100%" height="150px">
+                        <button style="background-color: #FE2E2E; border:2px solid white; border-radius:50%; padding:5px 7px; color:white; position:absolute; top:-5%; left:85%; " type="button" name="button" onclick="Delete({{image.id}})"><span class="icon-trash-1"></span></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="col-md-4">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" class="btn_full green" value="Guardar">
+            </form>
+        </div>
+  </div><!-- end container -->
+{% endblock %}
+
+{% block js_specific %}
+  <script>
+      function Delete(id) {
+        conf = confirm("Desea eliminar este elemento?");
+        if (conf==true) {
+          $.ajax({
+            url : "{% url 'events:event_delete' event.id %}" , // the endpoint
+            type : "POST", // http method
+            data : {
+              csrfmiddlewaretoken: '{{ csrf_token }}',
+              model : 'gallery',
+              id_model : id,
+            }, // data sent with the post request
+            // handle a successful response
+            success : function(json) {
+                //console.log(json); // log the returned json to the console
+                $("#image-"+json.id).remove();
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+          });
+        }
+      }
+  </script>
+{% endblock %}

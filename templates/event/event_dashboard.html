@@ -1,0 +1,231 @@
+{% extends "event/base/index.html" %}
+
+
+{% block container %}
+<div class="margin_30 container-fluid">
+        {% if tickets and images%}
+            {% if event.status %}
+                <a href="{% url 'events:publish' event.id %}" class="btn_full green">Cerrar Evento</a>
+            {% else %}
+                <a href="{% url 'events:publish' event.id %}" class="btn_full green">Publicar Evento</a>
+            {% endif %}
+        {% endif %}
+
+        {% include "event/base/sidebar_nav_event.html" %}
+
+        <div class="col-md-10">
+          <div class="col-md-8">
+            <div class="row">
+              <div class="col-md-4" style="position:relative;padding-top:1.8em;">
+                <h4 style="font-weight:bold;"><span class="icon-ticket" style="color:{{config.color_one}};"></span>Tickets</h4>
+                <canvas id="statsTickets" width="400" height="400"></canvas>
+                <p style="position:absolute;font-size:1em;top:35%;left:15%;">Dinero recaudado</p>
+                <p style="position:absolute;font-size:2.4em;top:46%;left:15%;" id="raised_money"></p>
+                <p style="position:absolute;font-size:2.4em;top:46%;left:15%;" id="tickets_sold"></p>
+              </div>
+              <div class="col-md-4" style="padding-top:1.8em;">
+                <h4 style="font-weight:bold;"><span class="icon-newspaper" style="color:{{config.color_one}};"></span>Aceptar Asistencia</h4>
+                <div style="height: 200px; overflow:auto;">
+                  <table class="table">
+                    {% if assistance %}
+                    <tbody id="assistances">
+                        {% for assis in assistance %}
+                          <tr id="assistance-{{assis.id}}">
+                            <td>{{assis.user.username}}</td>
+                            <td><button type="button" onclick="toAccept({{assis.id}})"  class="btn btn-green" name="button"><i class="icon-check-1"></i></button></td>
+                          </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% else %}
+                      <p style="text-align:center; font-weight:bold; font-size:1.2em;color: rgba(0,0,0,.5); margin-botton:-200px;">No hay nuevas solicitudes</p>
+                      <p class="text-center" style="color: rgba(0,0,0,.3);">Si tu evento es privado, aqui podras visualizar las solicitudes de los usuarios que deseen asistir y comprar tickets.</p>
+                    {% endif %}
+                  </table>
+                </div>
+              </div>
+              <div class="col-md-4" style="padding-top:1.8em;">
+                <h4 style="font-weight:bold;"><span class="icon-money" style="color:{{config.color_one}};"></span> Metodos De Pago</h4>
+                {% if methodspaymentevent %}
+
+                {% else %}
+                  <p style="text-align:center; font-weight:bold; font-size:1.2em;color: rgba(0,0,0,.5); margin-botton:-200px;">No hay metodos de pago</p>
+                  <p class="text-center" style="color: rgba(0,0,0,.3);">Puedes configurar tu cuenta en alguna de las pasarelas de pago que te ofrecemos.</p>
+                  <p class="text-center"><a href="{% url 'events:event_configurations' event.id %}" class="btn_1 blue"><i class="icon-tools"></i>Configurar</a></p>
+                {% endif %}
+              </div>
+            </div>
+            <div class="row">
+              <h4 style="font-weight:bold;"><span class="icon-clock" style="color:{{config.color_one}};"></span>Ultimas Transacciones</h4>
+              <div class="col-md-11">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Comprador</th>
+                      <th>Ticket</th>
+                      <th>Precio</th>
+                      <th>Fecha</th>
+                      <th>Metodo</th>
+                    </tr>
+                  </thead>
+                  <tbody id="transactions">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+                 <div class="row">
+                    <div class="hotel_container">
+                        <div class="img_container">
+                            {% with images|first as image %}
+                            <img src="{{ image.image.url }}" style="width: 100%; height: 250px;" class="img-responsive" alt="Image">
+                            {% endwith %}
+                            <div class="short_info hotel">
+                                <i class="{{event.type_event.icon}}"></i>{{ event.type_event.tile }}
+                                 {% with tickets|first as ticket %}
+                                 <span class="price"><sup>Desde ${{ ticket.price }}0</sup></span>
+                                 {% endwith %}
+                            </div>
+                        </div>
+                        <div class="hotel_title">
+                            <h3><strong>{{ event.title }}</strong></h3>
+                            <div class="rating">
+                                <i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star-empty"></i>
+                            </div><!-- end rating -->
+                        </div>
+                    </div><!-- End box tour -->
+               </div><!-- End row -->
+
+              <div class="row">
+                  {% if tickets %}
+                      <div class="alert alert-success">
+                        <strong class="icon icon-check-1"></strong> Tienes creado un ticket
+                      </div>
+                  {% else %}
+                      <div class="alert alert-danger">
+                        <strong>Falta!</strong> Debes Crear almenos un ticket
+                      </div>
+                  {% endif %}
+
+                  {% if images %}
+                      <div class="alert alert-success">
+                        <strong class="icon icon-check-1"></strong> Tienes la imagen de tu evento
+                      </div>
+                  {% else %}
+                      <div class="alert alert-danger">
+                        <strong>Falta!</strong> Debes añadir una imagen para tu evento
+                      </div>
+                  {% endif %}
+              </div>
+          </div>
+        </div>
+</div><!-- end container -->
+{% endblock %}
+
+{% block js_specific %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+  <script>
+
+  $(function() {
+      $.ajax({
+          url : "{% url 'events:statsTickets' %}", // the endpoint
+          type : "POST", // http method
+          data : {
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            id_event : '{{event.id}}',
+          }, // data sent with the post request
+
+          // handle a successful response
+          success : function(json) {
+              console.log(json); // log the returned json to the console
+
+              $('#raised_money').text("$"+json.total);
+
+              var ctx = document.getElementById("statsTickets");
+              var myChart = new Chart(ctx, {
+                  type: 'bar',
+                  data: {
+                      labels: json.titles,
+                      datasets: [{
+                          label: '$',
+                          data: json.money,
+                      }]
+                  },
+                  options: {
+                      scales: {
+                          yAxes: [{
+                              ticks: {
+                                  display: false,
+                              }
+                          }],
+                          xAxes: [{
+                              ticks: {
+                                  display: false
+                              }
+                          }]
+                      },
+                      showXAxisLabel:false,
+                      legend: {
+                          display: false
+                      },
+                      responsive: true,
+                  }
+              });
+          },
+
+          // handle a non-successful response
+          error : function(xhr,errmsg,err) {
+              console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+          }
+      });
+  })
+
+  $(function() {
+      $.ajax({
+          url : "{% url 'events:ticketsSold' %}",
+          type : "POST",
+          data : {
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            id_event : '{{event.id}}',
+          },
+
+          success : function(json) {
+              count_transactions = 0;
+              for (var i = json.tickets_sold_list.length-1; i >= 0; i--) {
+                if (count_transactions<5) {
+                  date = new Date(json.tickets_sold_list[i].date);
+                  date_new = date.getDay() + "/" + (date.getMonth()+1) + "/" + date.getFullYear() + " - " + date.getHours()+":"+ date.getMinutes();
+                  row = "<tr>" +"<td>"+json.tickets_sold_list[i].user+"</td>" +"<td>"+json.tickets_sold_list[i].ticket+"</td>" +"<td>"+json.tickets_sold_list[i].price+"</td>"+"<td>"+date_new+"</td>"+"<td>"+json.tickets_sold_list[i].method+"</td>"+"</tr>";
+                  $('#transactions').append(row)
+                }
+                count_transactions+=1;
+              }
+          },
+
+          error : function(xhr,errmsg,err) {
+              console.log(xhr.status + ": " + xhr.responseText);
+          }
+      });
+  })
+
+  function toAccept(id) {
+    $.ajax({
+        url : "{% url 'events:toaccept' %}",
+        type : "POST",
+        data : {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          idRequestAssistance : id,
+        },
+
+        success : function(json) {
+            console.log(json);
+            $('#assistance-'+json.idRequestAssistance).remove();
+        },
+
+        error : function(xhr,errmsg,err) {
+            console.log(xhr.status + ": " + xhr.responseText);
+        }
+    });
+  }
+  </script>
+{% endblock  %}

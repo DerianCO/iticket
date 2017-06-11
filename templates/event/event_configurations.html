@@ -1,0 +1,640 @@
+{% extends "event/base/index.html" %}
+
+{% block title_section %}
+  Configuraciones
+{% endblock %}
+
+
+{% block css_specific %}
+<style>
+
+  .typeEvents{
+
+  }
+
+  .typeEvents input[type="radio"]{
+    display: none;
+  }
+
+  .typeEvents .radioTypeEvento label{
+    color: #0074D9;
+    font-size: 2em;
+    padding: 3px 5px;
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .typeEvents .radioTypeEvento label:hover{
+    background-color: rgba(0, 116, 217, .2);
+    border-radius: 50%;
+  }
+
+  .typeEvents p{
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .titleTypeEvents{
+    font-size: 1.1em;
+    font-weight: bold;
+    color: rgba(0,0,0,.7);
+  }
+
+  .typeEvents input[type="radio"]:checked + p>label{
+    background-color: #0074D9;
+    color: white;
+    border-radius: 50%;
+  }
+
+</style>
+{% endblock %}
+
+{% block li_section %}
+  <li><a href="{% url 'events:event_planners' event.id %}">Configraciones</a></li>
+{% endblock %}
+
+{% block container %}
+<div class="margin_30 container-fluid">
+  {% include "event/base/sidebar_nav_event.html" %}
+
+  <div class="col-md-10">
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingOne"  style="padding:0px;">
+          <h4 class="panel-title">
+            <a role="button"  style="padding:20px;" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              <i class="icon-info-4"></i>Informacion del evento <i class="icon-down-open pull-right"></i>
+            </a>
+          </h4>
+        </div>
+
+        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+          <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label for="titleevent">Titulo del evento</label>
+                    <input type="text" class="form-control" name="titleevent" id="titleevent" value="{{event.title}}">
+                </div>
+
+                <div class="form-group">
+                    <label for="titleevent">Url del evento</label>
+                    <input type="text" class="form-control" name="urlevent" id="urlevent" value="{{event.url_event}}" placeholder="url donde se transmitira el evento">
+                </div>
+
+                <div class="form-group">
+                    <label for="descriptionevent">Descripcion del evento</label>
+                    <textarea class="form-control" name="descriptionevent" id="descriptionevent" rows="8" cols="80">{{event.description}}</textarea>
+                </div>
+            </div>
+            <div class="col-md-4">
+              <div id="map_event">
+
+              </div>
+              <button style="background-color: #0174DF; border:6px solid white; border-radius:50%; padding:5px 7px; color:white; position:absolute; top:-3%; left:87%; " type="button" name="button" onclick="showFormEditLocation()"><span class="icon-pencil"></span></button>
+            </div>
+          </div>
+
+          <div class="row" id="formEditLocation" style="display:none;">
+            <div class="col-md-8">
+              <div class="form-group">
+                  <label for="locationName">Nombre del lugar</label>
+                  <input type="text" class="form-control" name="locationName" id="locationName" value="{{event.location_name}}">
+              </div>
+
+              <div class="form-group">
+                  <label for="locationAddress">Direccion</label>
+                  <input type="text" class="form-control" name="locationAddress" id="locationAddress" value="{{event.location_address}}">
+              </div>
+
+              <div class="form-group">
+                  <label for="locationState">Ciudad</label>
+                  <input type="text" class="form-control" name="locationState" id="locationState" value="{{event.location_state}}">
+              </div>
+
+              <div class="form-group">
+                  <label for="locationCountry">Pais</label>
+                  <input type="text" class="form-control" name="locationCountry" id="locationCountry" value="{{event.location_country}}">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <h4 class="titleTypeEvents">Tema del evento</h4>
+              <div class="row typeEvents">
+                {% for type_event in type_events %}
+                  <div class="radioTypeEvento col-md-2">
+                    <input {% if type_event.id == event.type_event.id %}checked{% endif %}  type="radio" id="type-{{type_event.tile}}" name="typeevent" onchange="changeTypeEvent({{type_event.id}})">
+                    <p><label for="type-{{type_event.tile}}" ><i class="{{type_event.icon}}"></i></label></p>
+                    <p>{{type_event.tile}}</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <hr>
+
+          <button type="button" name="button" class="btn_1 blue pull-right " onclick="changeInfoEvent()"><i class="icon-floppy-1"></i>Guardar Cambios</button>
+
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingTwo"  style="padding:0px;">
+          <h4 class="panel-title">
+            <a class="collapsed"  style="padding:20px;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              <i class="icon-tools"></i>Opciones del evento <i class="icon-down-open pull-right"></i>
+            </a>
+          </h4>
+        </div>
+        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            <div class="col-md-3">
+              <div class="material-switch">
+                <span style="font-weight: bold; font-size: 1.2em; margin-right:10px;" >Evento Presencial?</span>
+                <input id="event_presencial" name="type_location" type="checkbox" {% if event.location_type.id == 2 %}checked{% endif %} onchange="">
+                <label for="event_presencial" class="label-success"></label>
+              </div>
+              Si lo activas, significa que tu evento se realizara de manera presencial en un lugar especifico, este lo tendras que definir en la seccion de <strong>"Informacion del evento"</strong>.
+            </div>
+            <div class="col-md-3">
+              <div class="material-switch">
+                <span style="font-weight: bold; font-size: 1.2em; margin-right:10px;" >Mostrar mapa?</span>
+                <input id="event_showmap" name="type_location" type="checkbox" {% if event.show_map %}checked{% endif %} onchange="changeOption('showmap')">
+                <label for="event_showmap" class="label-success"></label>
+              </div>
+              Si lo activas, el mapa de la ubicacion donde se realizara tu evento podra ser visualizado por los usuarios en la pagina principal junto a la direccion.
+            </div>
+            <div class="col-md-3">
+              <div class="material-switch">
+                <span style="font-weight: bold; font-size: 1.2em; margin-right:10px;" >Evento privado?</span>
+                <input id="event_privacy" name="type_location" type="checkbox" {% if event.privacy %}checked{% endif %}  onchange="changeOption('privacy')">
+                <label for="event_privacy" class="label-success"></label>
+              </div>
+              Si lo activas, los usuarios que deseen comprar un ticket para tu evento, primero deberan enviar una solicitud de asistencia , la cual deberas aceptar.
+            </div>
+            <div class="col-md-3">
+              <div class="material-switch">
+                <span style="font-weight: bold; font-size: 1.2em; margin-right:10px;" >Tickets restantes?</span>
+                <input id="event_tickets_remaining" name="type_location" type="checkbox" {% if event.show_tickets_remaining %}checked{% endif %}  onchange="changeOption('showtickets')">
+                <label for="event_tickets_remaining" class="label-success"></label>
+              </div>
+              Si lo activas, los usuarios podran visualizar la cantidad de tickets que quedan en existencia para tu evento.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingThree"  style="padding:0px;">
+          <h4 class="panel-title">
+            <a class="collapsed"  style="padding:20px;" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              <i class="icon-money-1"></i>Metodos de pago<i class="icon-down-open pull-right"></i>
+            </a>
+          </h4>
+        </div>
+        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            <div class="panel-title">
+              <strong>Que son pasarelas de pago?</strong>
+            </div>
+            La pasarela de pago es el servicio de un proveedor de servicios de aplicación de comercio electrónico, con el que se autorizan pagos a negocios electrónicos (en línea), ventas en línea al detalle, negocios con presencia física y en línea simultáneamente.
+            <br><br>
+            En ifasy pensamos en nuestros usuarios, por lo tanto, te damos la libertad de añadir las credenciales de tus pasarelas de pago , para que tu dinero sea recaudado directamente en tus cuentas.
+            <br><br>
+            <a href="#addPaymentMethod" class="btn_1 blue" onclick=""  data-toggle="modal"><i class="icon-tools"></i> Configurar Pasarelas</a>
+            <hr>
+            <br><br>
+            <div class="panel-title">
+              <strong>Que son pagos offline?</strong>
+            </div>
+            Los pagos offline, son metodos de pagos manuales, esto quiere decir que el administrador del evento tendra que confirmar que el pago se realizo, normalmente se realizan por medio de consignaciones o giros a un numero de cuenta o un numero de identificacion.
+            <br><br>
+            En ifasy pensamos en nuestros usuarios, por lo tanto te damos la libertad de añadir formas de pagos offline ilimitadas, y editarlas a tu gusto, te recomendamos leer nuestros <strong>Terminos y condiciones</strong> antes de generar una nueva forma de pago offline.
+            <br><br>
+
+            <a href="#addPaymentMethodOffline" class="btn_1 blue" onclick=""  data-toggle="modal"><i class="icon-plus"></i> Añadir Pago Offline</a>
+
+            <hr>
+            <div class="row" id="my_payment_methods">
+              {% for pmeo in methodspaymenteventoffline %}
+                <div class="col-md-3 col-xs-6" id="mpeo-{{pmeo.id}}">
+                  <img src="{{pmeo.image.url}}" alt="{{pmeo.title}}" width="100%" height="60px">
+                  <button style="background-color: #FE2E2E; border:2px solid white; border-radius:50%; padding:5px 7px; color:white; position:absolute; top:-5%; left:0%; " type="button" name="button" onclick="DeleteMethodPaymentOffline({{pmeo.id}})"><span class="icon-trash-1"></span></button>
+                </div>
+              {% endfor %}
+            </div>
+
+
+            <!-- MODAL SELL -->
+            <div class="modal fade" id="addPaymentMethod">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <!-- HEADER MODAL -->
+                  <div class="modal-header">
+                    <button type="button" name="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Añadir Pasarela</h4>
+                  </div>
+                  <!-- BODY MODAL -->
+                  <div class="modal-body">
+                    <div class="container-fluid">
+                      <div class="panel-group" id="methodspayment" role="tablist" aria-multiselectable="true">
+
+                        {% for method in paymentmethods %}
+                          {% if forloop.first %}
+                          <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="heading-{{method.id}}">
+                              <h4 class="panel-title">
+                                <a role="button" data-toggle="collapse" data-parent="#methodspayment" href="#collapse-{{method.id}}" aria-expanded="true" aria-controls="collapse-{{method.id}}">
+                                  <img src="{{method.image.url}}" alt="{{method.title}}" width="20%" height="35">
+                                </a>
+                              </h4>
+                            </div>
+                            <div id="collapse-{{method.id}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading-{{method.id}}">
+                              <div class="panel-body">
+
+                                <input hidden type="text" id="methodevent-{{method.id}}" value="{% for mpe in methodspaymentevent %}{% if mpe.method.id == method.id %}{{mpe.id}}{% endif %}{% endfor %}">
+
+                                <div class="form-group">
+                                  <label for="keyOne-{{method.id}}">Key One</label>
+                                  <input class="form-control" type="text" id="keyOne-{{method.id}}" name="keyOne-{{method.id}}" value="{% for mpe in methodspaymentevent %}{% if mpe.method.id == method.id %}{{mpe.key_one}}{% endif %}{% endfor %}">
+                                </div>
+
+                                <div class="form-group">
+                                  <label for="keyTwo-{{method.id}}">Key Two</label>
+                                  <input class="form-control" type="text" id="keyTwo-{{method.id}}" name="keyTwo-{{method.id}}" value="{% for mpe in methodspaymentevent %}{% if mpe.method.id == method.id %}{{mpe.ket_two}}{% endif %}{% endfor %}">
+                                </div>
+
+                                <button type="button" class="btn_1 blue pull-right" name="button" onclick="configPlatformPayment({{method.id}})">Guardar</button>
+                              </div>
+                            </div>
+                          </div>
+                          {% else %}
+                          <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="heading-{{method.id}}">
+                              <h4 class="panel-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" data-parent="#methodspayment" href="#collapse-{{method.id}}" aria-expanded="false" aria-controls="collapse-{{method.id}}">
+                                  <img src="{{method.image.url}}" alt="{{method.title}}" width="20%" height="35">
+                                </a>
+                              </h4>
+                            </div>
+                            <div id="collapse-{{method.id}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{{method.id}}">
+                              <div class="panel-body">
+                                <input hidden type="text" id="methodevent-{{method.id}}" value="{% for mpe in methodspaymentevent %}{% if mpe.method.id == method.id %}{{mpe.id}}{% endif %}{% endfor %}">
+
+                                <div class="form-group">
+                                  <label for="keyOne-{{method.id}}">Key One</label>
+                                  <input class="form-control" type="text" id="keyOne-{{method.id}}" name="keyOne-{{method.id}}" value="{% for mpe in methodspaymentevent %}{% if mpe.method.id == method.id %}{{mpe.key_one}}{% endif %}{% endfor %}">
+                                </div>
+
+                                <div class="form-group">
+                                  <label for="keyTwo-{{method.id}}">Key Two</label>
+                                  <input class="form-control" type="text" id="keyTwo-{{method.id}}" name="keyTwo-{{method.id}}" value="{% for mpe in methodspaymentevent %}{% if mpe.method.id == method.id %}{{mpe.ket_two}}{% endif %}{% endfor %}">
+                                </div>
+
+                                <button type="button" class="btn_1 blue pull-right" name="button" onclick="configPlatformPayment({{method.id}})">Guardar</button>
+                              </div>
+                            </div>
+                          </div>
+                          {% endif %}
+                        {% endfor %}
+
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+
+            <!-- MODAL SELL -->
+            <div class="modal fade" id="addPaymentMethodOffline">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <!-- HEADER MODAL -->
+                  <div class="modal-header">
+                    <button type="button" name="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Añadir Metodo Offline</h4>
+                  </div>
+                  <!-- BODY MODAL -->
+                  <div class="modal-body">
+                    <div class="container-fluid">
+                      <form method="post" action="{% url 'events:paymentoffline' event.id %}" enctype="multipart/form-data">
+                          {% csrf_token %}
+                          {{ form_offline.as_p }}
+                          <input type="submit" class="btn_full green" value="Guardar">
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- end container -->
+{% endblock %}
+
+{% block js_specific %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0ZfQL0Mxc4bnZnAtDk8bNL0-DZ18MkbM" type="text/javascript"></script>
+<script>
+  function changeOption(option) {
+    $.ajax({
+        url : "{% url 'events:changeOption' %}",
+        type : "POST",
+        data : {
+          csrfmiddlewaretoken : "{{ csrf_token }}",
+          idevent : "{{event.id}}",
+          config_change: option,
+        },
+
+        success : function(json) {
+          console.log(json);
+        },
+
+        // handle a non-successful response
+        error : function(xhr,errmsg,err) {
+            $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+            console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+        }
+    });
+  }
+</script>
+
+<script>
+  $(function(){
+    var mapOptions = {
+      zoom: 17,
+      center: new google.maps.LatLng("{{event.location_address_latitude}}","{{event.location_address_longitude}}"),
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+
+      mapTypeControl: false,
+      mapTypeControlOptions: {
+        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+        position: google.maps.ControlPosition.LEFT_CENTER
+      },
+      panControl: false,
+      panControlOptions: {
+        position: google.maps.ControlPosition.TOP_RIGHT
+      },
+      zoomControl: true,
+      zoomControlOptions: {
+        style: google.maps.ZoomControlStyle.LARGE,
+        position: google.maps.ControlPosition.RIGHT_BOTTOM
+      },
+       scrollwheel: false,
+      scaleControl: false,
+      scaleControlOptions: {
+        position: google.maps.ControlPosition.LEFT_CENTER
+      },
+      streetViewControl: true,
+      streetViewControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_BOTTOM
+      },
+      styles: [
+                     {
+        "featureType": "landscape",
+        "stylers": [
+          {
+            "hue": "#FFBB00"
+          },
+          {
+            "saturation": 43.400000000000006
+          },
+          {
+            "lightness": 37.599999999999994
+          },
+          {
+            "gamma": 1
+          }
+        ]
+      },
+      {
+        "featureType": "road.highway",
+        "stylers": [
+          {
+            "hue": "#FFC200"
+          },
+          {
+            "saturation": -61.8
+          },
+          {
+            "lightness": 45.599999999999994
+          },
+          {
+            "gamma": 1
+          }
+        ]
+      },
+      {
+        "featureType": "road.arterial",
+        "stylers": [
+          {
+            "hue": "#FF0300"
+          },
+          {
+            "saturation": -100
+          },
+          {
+            "lightness": 51.19999999999999
+          },
+          {
+            "gamma": 1
+          }
+        ]
+      },
+      {
+        "featureType": "road.local",
+        "stylers": [
+          {
+            "hue": "#FF0300"
+          },
+          {
+            "saturation": -100
+          },
+          {
+            "lightness": 52
+          },
+          {
+            "gamma": 1
+          }
+        ]
+      },
+      {
+        "featureType": "water",
+        "stylers": [
+          {
+            "hue": "#0078FF"
+          },
+          {
+            "saturation": -13.200000000000003
+          },
+          {
+            "lightness": 2.4000000000000057
+          },
+          {
+            "gamma": 1
+          }
+        ]
+      },
+      {
+        "featureType": "poi",
+        "stylers": [
+          {
+            "hue": "#00FF6A"
+          },
+          {
+            "saturation": -1.0989010989011234
+          },
+          {
+            "lightness": 11.200000000000017
+          },
+          {
+            "gamma": 1
+          }
+        ]
+      }
+      ]
+    };
+
+    document.getElementById("map_event").style.width = "100%";
+    document.getElementById("map_event").style.height = "345px";
+
+    var mapObject = new google.maps.Map(document.getElementById('map_event'), mapOptions);
+    var marker = new google.maps.Marker({
+      position: {lat: parseFloat("{{event.location_address_latitude}}"),lng: parseFloat("{{event.location_address_longitude}}")},
+      map: mapObject
+    });
+  });
+</script>
+
+<script>
+  var formEditLocationStatus = false;
+  var type_event = parseInt("{{event.type_event.id}}");
+
+  function showFormEditLocation() {
+    if (formEditLocationStatus) {
+      document.getElementById('formEditLocation').style.display = 'none';
+      formEditLocationStatus = false;
+    }else{
+      document.getElementById('formEditLocation').style.display = 'block';
+      formEditLocationStatus = true;
+    }
+  }
+
+  function changeTypeEvent(newid) {
+    type_event = newid;
+  }
+
+  function changeInfoEvent(){
+    console.log(type_event);
+    $.ajax({
+      url : "{% url 'events:new' %}",
+      type : "POST",
+      data : {
+        csrfmiddlewaretoken : "{{ csrf_token }}",
+        idevent : "{{event.id}}",
+        title : $('#titleevent').val(),
+        url_event : $('#urlevent').val(),
+        description: $('#descriptionevent').val(),
+        locationName: $('#locationName').val(),
+        locationAddress:$('#locationAddress').val(),
+        locationState:$('#locationState').val(),
+        locationCountry:$('#locationCountry').val(),
+        id_type : type_event
+       },
+
+      success : function(json) {
+          console.log(json);
+      },
+
+      error : function(xhr,errmsg,err) {
+          $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+              " <a href='#' class='close'>&times;</a></div>");
+          console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  }
+
+
+</script>
+
+
+<script>
+function DeleteMethodPaymentOffline(id) {
+  console.log(id);
+  conf = confirm("Desea eliminar este elemento?");
+  if(conf==true){
+    $.ajax({
+      url : "{% url 'events:event_delete' event.id %}" , // the endpoint
+      type : "POST", // http method
+      data : {
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        model : 'mpeo',
+        id_model : id,
+      }, // data sent with the post request
+      // handle a successful response
+      success : function(json) {
+          //console.log(json); // log the returned json to the console
+          $("#mpeo-"+json.id).remove();
+      },
+
+      // handle a non-successful response
+      error : function(xhr,errmsg,err) {
+          console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+      }
+    });
+  }
+}
+
+
+function configPlatformPayment(idmethod) {
+  idevent = parseInt("{{event.id}}");
+  key_one = $('#keyOne-'+idmethod).val();
+  key_two = $('#keyTwo-'+idmethod).val();
+
+  if ($('#methodevent-'+idmethod).val() != "") {
+    datos = {
+      csrfmiddlewaretoken : "{{ csrf_token }}",
+      idevent : idevent,
+      method : idmethod,
+      key_one : key_one,
+      ket_two : key_two,
+      idmpeo : $('#methodevent-'+idmethod).val(),
+    }
+  }else{
+    datos = {
+      csrfmiddlewaretoken : "{{ csrf_token }}",
+      idevent : idevent,
+      method : idmethod,
+      key_one : key_one,
+      ket_two : key_two,
+    }
+  }
+
+  $.ajax({
+        url : "{% url 'events:platformpayment' %}",
+        type : "POST",
+        data : datos,
+
+        success : function(json) {
+            console.log(json);
+        },
+
+        error : function(xhr,errmsg,err) {
+            console.log(xhr.status + ": " + xhr.responseText);
+        }
+    });
+}
+
+
+</script>
+
+{% endblock %}

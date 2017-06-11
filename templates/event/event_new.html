@@ -1,0 +1,222 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+{% load staticfiles %}
+<div class="row">
+  <div class="form-group">
+    <input id="title_event" style="border:none;margin:none;box-shadow:none; background-color: transparent; font-weight:bold; font-size: 2em; text-align:center;" type="text" class="form-control" name="title" placeholder="Titulo del evento">
+  </div>
+  <div class="col-md-8">
+    <div class="form-group">
+      <div class="material-switch">
+        <span style="font-weight: bold; font-size: 1.2em; margin-right:10px;" >Evento Presencial?</span>
+        <input id="event_presencial" name="type_location" type="checkbox" onchange="show_location_info()">
+        <label for="event_presencial" class="label-success"></label>
+      </div>
+    </div>
+
+    <div class="form-group" id="link_text" >
+      <input class="form-control" type="text" name="link" id="link_event" placeholder="Link Del Evento">
+    </div>
+
+    <div class="form-group" id="location_text" style="display:none;">
+      <div id="locationField">
+        <input class="form-control" id="autocomplete" placeholder="Direccion o Nombre del lugar del evento"
+               onFocus="geolocate()" type="text" ></input>
+      </div>
+    </div>
+
+    <div class="form-group">
+        <input class="form-control form_date" type="text" name="start_date"  id="start_date" placeholder="Fecha de inicio" data-date="" data-date-format="dd/mm/yyyy" data-link-field="dtp_input2" >
+    </div>
+
+    <div class="form-group">
+        <input class="form-control form_time" type="text" name="start_time" id="start_time" placeholder="Hora de inicio" data-date="" data-date-format="hh:ii:ss" data-link-field="dtp_input3">
+    </div>
+
+    <div class="form-group">
+        <input class="form-control form_date" type="text" name="end_date" id="end_date" placeholder="Fecha final del evento" data-date="" data-date-format="dd/mm/yyyy" data-link-field="dtp_input2">
+    </div>
+
+    <div class="form-group">
+        <input class="form-control form_time" type="text" name="end_time" id="end_time" placeholder="Hora final del evento" data-date="" data-date-format="hh:ii:ss" data-link-field="dtp_input3">
+    </div>
+
+    <div class="form-group">
+      <textarea  class="form-control" name="description" id="description" placeholder="Descripcion sobre el evento" rows="5" cols="80"></textarea>
+    </div>
+
+    <div class="form-group">
+      <select class="form-control" name="type_event" id="type_event">
+        {% for type_e in type_events %}
+          <option value="{{type_e.id}}">{{type_e.tile}}</option>
+        {% endfor %}
+
+      </select>
+    </div>
+
+    <button type="button" class="btn_full green" name="button" onclick="cevent();" >Crear Evento</button>
+  </div>
+
+  <div class="col-md-4" id="info_location" style="display:none">
+    <div class="card" style="width: 100%;">
+      <div id="map_event">
+      </div>
+      <div class="card-block">
+        <h3 class="card-title">Ubicacion</h3>
+        <div class="form-group">
+            <input disabled="true" class="form-control" type="text" name="route" placeholder="Cra/Cl" id="route">
+        </div>
+        <div class="form-group">
+          <input disabled="true" class="form-control" type="text" name="Numero" placeholder="Numero" id="street_number">
+        </div>
+        <div class="form-group">
+          <input disabled="true" class="form-control" type="text" name="ciudad" placeholder="Ciudad" id="locality">
+        </div>
+        <div class="form-group">
+          <input disabled="true" class="form-control" type="text" name="departamento" placeholder="Departamento" id="administrative_area_level_1">
+        </div>
+        <div class="form-group">
+          <input disabled="true" class="form-control" type="text" name="postal_code" placeholder="Codigo Postal" id="postal_code">
+        </div>
+        <div class="form-group">
+          <input disabled="true" class="form-control" type="text" name="pais" placeholder="Pais" id="country">
+        </div>
+        <input style="visibility:hidden;" type="text" name="lat" id="lat">
+        <input style="visibility:hidden;" type="text" name="lng" id="lng">
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block js_specific %}
+
+<script src="{% static 'js/event/new_event_map.js' %}"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0ZfQL0Mxc4bnZnAtDk8bNL0-DZ18MkbM&libraries=places&callback=initAutocomplete"
+    async defer></script>
+
+
+<script>
+  function show_location_info() {
+    check = document.getElementById('event_presencial');
+    if (check.checked) {
+      document.getElementById('info_location').style.display = 'block';
+      document.getElementById('location_text').style.display = 'block';
+      document.getElementById('link_text').style.display = 'none';
+
+    }else{
+      document.getElementById('info_location').style.display = 'none';
+      document.getElementById('location_text').style.display = 'none';
+      document.getElementById('link_text').style.display = 'block';
+    }
+  }
+
+  function cevent(){
+    title = $('#title_event').val();
+    location_type = this.is_checked('event_presencial');
+    location_name = $('#autocomplete').val();
+
+    if(location_type){
+      location_type = 2;
+      location_name = $('#autocomplete').val();
+    }else{
+      location_type = 1;
+      location_name = $('#link_event').val();
+    }
+
+    location_address = $('#route').val() + ' # ' + $('#street_number').val();
+    location_address_latitude = $('#lat').val();
+    location_address_longitude = $('#lng').val();
+    location_state = $('#locality').val();
+    location_country = $('#country').val();
+    location_postal_code = $('#postal_code').val();
+    show_map = true;
+    start_date = $('#start_date').val();
+    start_time = $('#start_time').val();
+    end_date = $('#end_date').val();
+    end_time = $('#end_time').val();
+    description = $('#description').val();
+    privacy = false;
+    show_tickets_remaining = true;
+    type_event = $('#type_event').val();
+
+    $.ajax({
+         url : "{% url 'events:new' %}", // the endpoint
+         type : "POST", // http method
+         data : {
+           csrfmiddlewaretoken : "{{ csrf_token }}",
+           title : title,
+           location_type : location_type,
+           location_name : location_name,
+           location_address : location_address,
+           location_address_latitude : location_address_latitude,
+           location_address_longitude : location_address_longitude,
+           location_state : location_state,
+           location_country : location_country,
+           location_postal_code : location_postal_code,
+           show_map : show_map,
+           start_date : start_date,
+           start_time : start_time,
+           end_date : end_date,
+           end_time : end_time,
+           description : description,
+           privacy : privacy,
+           show_tickets_remaining : show_tickets_remaining,
+           type_event : type_event,
+         }, // data sent with the post request
+
+         // handle a successful response
+         success : function(json) {
+           console.log(json);
+           if (json.status=="OK") {
+             window.location="http://104.131.71.163/events/dashboard/"+json.id_event+"/";
+           }
+         },
+
+         // handle a non-successful response
+         error : function(xhr,errmsg,err) {
+             $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                 " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+             console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+         }
+     });
+  }
+
+  function is_checked(id) {
+    element = document.getElementById(id);
+    if(element.checked){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+</script>
+<script src="{% static 'js/datepicker.js' %}"></script>
+
+<script type="text/javascript">
+$('.form_date').datetimepicker({
+  weekStart: 1,
+  todayBtn:  1,
+  autoclose: 1,
+  todayHighlight: 1,
+  startView: 2,
+  minView: 2,
+  forceParse: 0
+});
+
+$('.form_time').datetimepicker({
+    weekStart: 1,
+    todayBtn:  1,
+		autoclose: 1,
+		todayHighlight: 1,
+		startView: 1,
+		minView: 0,
+		maxView: 1,
+		forceParse: 0
+});
+</script>
+
+{% endblock %}

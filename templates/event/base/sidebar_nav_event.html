@@ -1,0 +1,38 @@
+<div class="col-md-2">
+
+  <ul class="list-group">
+    <li class="list-group-item">
+      <a href="{% url 'events:dashboard' event.id %}"><span class="icon-heart"></span> {{event.title}}</a>
+    </li>
+    <li class="list-group-item">
+      <a href="{% url 'events:event_configurations' event.id %}"><span class="icon-tools"></span> Configuraciones</a>
+    </li>
+  </ul>
+
+  <ul class="list-group">
+    <li class="list-group-item">
+      <a href="{% url 'events:event_images' event.id %}"><span class="icon-picture-5"></span> Imagenes</a>
+    </li>
+    <li class="list-group-item">
+      <a href="{% url 'events:event_gallery' event.id %}"><span class=" icon-camera-7"></span> Galeria</a>
+    </li>
+    <li class="list-group-item">
+      <a href="{% url 'events:event_planners' event.id %}"><span class="icon-user-pair"></span> Organizadores</a>
+    </li>
+    <li class="list-group-item">
+      <a href="{% url 'events:event_shellers' event.id %}"><span class="icon-money"></span> Vendedores</a>
+    </li>
+    <li class="list-group-item">
+      <a href="{% url 'events:event_tickets' event.id %}"><span class="icon-ticket-1"></span> Tickets</a>
+    </li>
+    <li class="list-group-item">
+      <a href="{% url 'events:event_sponsors' event.id %}"><span class="icon-megaphone"></span> Patrocinadores</a>
+    </li>
+    <li class="list-group-item">
+      <a href="{% url 'events:event_guests' event.id %}"><span class="icon-users-2"></span> Invitados</a>
+    </li>
+    <li class="list-group-item">
+      <a href="{% url 'events:event_schedules' event.id %}"><span class="icon-calendar"></span> Cronograma</a>
+    </li>
+  </ul>
+</div>

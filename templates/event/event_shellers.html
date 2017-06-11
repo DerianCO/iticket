@@ -1,0 +1,120 @@
+{% extends "event/base/index.html" %}
+{% load staticfiles %}
+{% block title_section %}
+  Shellers
+{% endblock %}
+
+{% block css_specific %}
+  <link rel="stylesheet" href="{% static 'css/home/select.css' %}">
+{% endblock %}
+
+{% block li_section %}
+  <li><a href="{% url 'events:event_shellers' event.id %}">Shellers</a></li>
+{% endblock %}
+
+{% block container %}
+<div class="margin_30 container-fluid">
+  {% include "event/base/sidebar_nav_event.html" %}
+      <div class="col-md-6">
+        {% if model %}
+          {% for groups_shellers in model %}
+            <div class="panel panel-primary">
+              <div class="panel-heading">{{groups_shellers.group.title}} -  {{groups_shellers.group.boss.username}}</div>
+              <table class="table">
+                <thead>
+                  <th>Username</th>
+                  <th>Nombres</th>
+                  <th>Apellidos</th>
+                  <th>Email</th>
+                </thead>
+                <tbody id="tableGroup_{{groups_shellers.group.id}}">
+                  {% for sheller in groups_shellers.shellers %}
+                    <tr id="sheller_group_{{sheller.id}}_{{groups_shellers.group.id}}">
+                      <td> {{sheller.user.username}} </td>
+                      <td> {{sheller.user.first_name}} </td>
+                      <td> {{sheller.user.last_name}} </td>
+                      <td> {{sheller.user.email}} </td>
+                      <td>
+                        <button type="button" onclick="deleteSheller({{sheller.id}},{{groups_shellers.group.id}})" class="btn btn-danger" name="button"><i class="icon-trash"></i></button>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+
+              </table>
+              <div class="panel-footer">
+                <select class="selectpicker" id="group_sheller_{{groups_shellers.group.id}}" data-live-search="true">
+                  {% for userl in users %}
+                      <option value="{{userl.id}}"  data-tokens="{{userl.email}}">{{userl.username}}</option>
+                  {% endfor %}
+                </select>
+                <button type="button" onclick="addShellerInTheGroup({{groups_shellers.group.id}})" class="btn green" name="button">Añadir vendedor</button>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      <div class="col-md-4">
+          <form method="post">
+              {% csrf_token %}
+              {{ form.as_p }}
+              <input type="submit" class="btn_full green" value="Guardar">
+          </form>
+      </div>
+</div>
+{% endblock %}
+
+{% block js_specific %}
+<script src="{% static 'js/home/select.js' %}"></script>
+
+<script>
+
+  function deleteSheller(idSheller,idGroup) {
+    $.ajax({
+      url : "{% url 'events:event_delete' event.id %}" ,
+      type : "POST",
+      data : {
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        model : 'sheller',
+        id_model : idSheller,
+      },
+      success : function(json) {
+          $('#sheller_group_'+json.id+'_'+idGroup).remove();
+      },
+
+      error : function(xhr,errmsg,err) {
+          console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+  }
+
+
+  function addShellerInTheGroup(idGroup) {
+    idUser = $('#group_sheller_'+idGroup).val()
+
+    $.ajax({
+        url : "{% url 'events:addsheller' %}",
+        type : "POST",
+        data : {
+          csrfmiddlewaretoken : "{{ csrf_token }}",
+          idUser : idUser,
+          idGroup : idGroup
+        },
+
+        success : function(json) {
+            console.log(json);
+            $('#tableGroup_'+json.idGroup).append('<tr id="sheller_group_'+json.idSheller+'_'+json.idGroup+'"><td> '+json.username+' </td><td> '+json.first_name+' </td><td> '+json.last_name+' </td><td> '+json.email+' </td><td><button type="button" onclick="deleteSheller('+json.idSheller+','+json.idGroup+')" class="btn btn-danger" name="button"><i class="icon-trash"></i></button></td></tr>');
+        },
+
+        error : function(xhr,errmsg,err) {
+            $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                " <a href='#' class='close'>&times;</a></div>");
+            console.log(xhr.status + ": " + xhr.responseText);
+        }
+    });
+
+  }
+
+</script>
+
+{% endblock %}

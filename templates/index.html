@@ -1,0 +1,46 @@
+{% extends "base/base2.html" %}
+
+{% block content %}
+{% load staticfiles %}
+
+<section id="hero" class="login">
+  <div class="container">
+      <div class="row">
+          <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
+              <div id="login">
+                    <div class="text-center"><img src="img/logo_sticky.png" alt="Image" data-retina="true" ></div>
+                        <hr>
+                        <form method="post" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        <div class="row">
+                        <div class="col-md-6 col-sm-6 login_social">
+                            <a href="{% url 'social:begin' 'facebook' %}" class="btn btn-primary btn-block"><i class="icon-facebook"></i> Facebook</a>
+                        </div>
+                        <div class="col-md-6 col-sm-6 login_social">
+                            <a href="{% url 'social:begin' 'twitter' %}" class="btn btn-info btn-block "><i class="icon-twitter"></i>Twitter</a>
+                        </div>
+                        </div> <!-- end row -->
+                        <div class="login-or"><hr class="hr-or"><span class="span-or">ó</span></div>
+
+                            <div class="form-group">
+                                <label>Usuario</label>
+                                <input type="text" class=" form-control " placeholder="usuario" name="username">
+                            </div>
+                            <div class="form-group">
+                                <label>Contraseña</label>
+                                <input type="password" class=" form-control" placeholder="contraseña" name="password">
+                            </div>
+                            <p class="small">
+                                <a href="{% url 'password_reset' %}">Olvide mi contraseña</a>
+                            </p>
+                            <input type="submit" class="btn_full" value="Entrar">
+                            <a href="register.html " class="btn_full_outline">Register</a>
+                        </form>
+
+                    </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

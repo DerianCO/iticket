@@ -1,0 +1,163 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="Citytours - Premium site template for city tours agencies, transfers and tickets.">
+    <meta name="author" content="Ansonika">
+    <title>{{config.title}}|{{event.title}}</title>
+
+    <!-- Favicons-->
+    <link rel="shortcut icon" href="{% static 'img/home/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" type="image/x-icon" href="img/apple-touch-icon-57x57-precomposed.png">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="{% static 'img/home/apple-touch-icon-72x72-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114" href="{% static 'img/home/apple-touch-icon-114x114-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144" href="{% static 'img/home/apple-touch-icon-144x144-precomposed.png' %}">
+
+    <!-- CSS -->
+    <link href="{% static 'css/home/base.css' %}" rel="stylesheet">
+
+
+    <!-- SPECIFIC CSS -->
+    <link href="{% static 'css/home/admin.css' %}" rel="stylesheet">
+    <link href="{% static 'css/event/event_admin.css' %}" rel="stylesheet">
+    <link href="{% static 'css/home/jquery.switch.css' %}" rel="stylesheet">
+
+    {% include "base/style.html" %}
+
+    {% block css_specific %}
+
+    {% endblock %}
+
+    <!-- Google web fonts -->
+   <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+   <link href='http://fonts.googleapis.com/css?family=Gochi+Hand' rel='stylesheet' type='text/css'>
+   <link href='http://fonts.googleapis.com/css?family=Lato:300,400' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="sk-spinner sk-spinner-wave">
+            <div class="sk-rect1"></div>
+            <div class="sk-rect2"></div>
+            <div class="sk-rect3"></div>
+            <div class="sk-rect4"></div>
+            <div class="sk-rect5"></div>
+        </div>
+    </div>
+    <!-- End Preload -->
+
+    <div class="layer"></div>
+    <!-- Mobile menu overlay mask -->
+
+     <!-- Header================================================== -->
+    <header>
+        <div id="top_line">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 col-sm-6 col-xs-6"><strong></strong></div>
+
+                    <div class="col-md-6 col-sm-6 col-xs-6">
+                        <ul id="top_links">
+                            <li>
+                                <div class="dropdown dropdown-access">
+                                    <a href="{% url 'logout' %}?next={% url 'home' %}" id="access_link">Cerrar Sesión</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div><!-- End row -->
+            </div><!-- End container-->
+        </div><!-- End top line-->
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-sm-3 col-xs-3">
+                    <div id="logo">
+                        <a href="{% url 'home' %}"><img src="{{config.logo.url}}" width="100" height="60" alt="City tours" data-retina="true" class="logo_normal"></a>
+                        <a href="{% url 'home' %}"><img src="{{config.logo.url}}" width="100" height="60" alt="City tours" data-retina="true" class="logo_sticky"></a>
+                    </div>
+                </div>
+                <nav class="col-md-9 col-sm-9 col-xs-9">
+                    <a class="cmn-toggle-switch cmn-toggle-switch__htx open_close" href="javascript:void(0);"><span>Menu mobile</span></a>
+                    <div class="main-menu">
+                        <div id="header_menu">
+                            <img src="{{config.logo.url}}" width="100" height="60" alt="City tours" data-retina="true">
+                        </div>
+                        <a href="#" class="open_close" id="close_in"><i class="icon_set_1_icon-77"></i></a>
+                        {% include "base/nav.html" %}
+                    </div><!-- End main-menu -->
+                </nav>
+            </div>
+        </div><!-- container -->
+    </header><!-- End Header -->
+
+
+<section class="parallax-window" data-parallax="scroll" data-image-src="{{config.banner_one.url}}" data-natural-width="1400" data-natural-height="470">
+    <div class="parallax-content-1">
+        <div class="animated fadeInDown">
+        	<h1>{{ event.title }} | {% block title_section %}Dashboard{% endblock %}</h1>
+        	<p>{{ event.description }}</p>
+        </div>
+    </div>
+</section><!-- End section -->
+
+<div id="position">
+    	<div class="container">
+                	<ul>
+                    <li><a href="{% url 'home' %}">Inicio</a></li>
+                    <li><a href="{% url 'profile:home' user.username %}">Perfil</a></li>
+                    <li><a href="{% url 'events:dashboard' event.id %}">{{ event.title }}</a></li>
+                    {% block li_section %}{% endblock %}
+                    </ul>
+        </div>
+</div><!-- End Position -->
+
+{% block container %}
+{% endblock %}
+
+{% include "base/footer.html" %}
+
+<div id="toTop"></div><!-- Back to top button -->
+
+
+<!-- Common scripts -->
+<script src="{% static 'js/home/jquery-1.11.2.min.js' %}"></script>
+<script src="{% static 'js/home/common_scripts_min.js' %}"></script>
+<script src="{% static 'js/home/functions.js' %}"></script>
+<script src="{% static 'js/datepicker.js' %}"></script>
+
+{% block js_specific %}
+
+{% endblock %}
+
+
+<script>
+    $('.form_date').datetimepicker({
+      weekStart: 1,
+      todayBtn:  1,
+      autoclose: 1,
+      todayHighlight: 1,
+      startView: 2,
+      minView: 2,
+      forceParse: 0
+    });
+
+    $('.form_time').datetimepicker({
+        weekStart: 1,
+        todayBtn:  1,
+    		autoclose: 1,
+    		todayHighlight: 1,
+    		startView: 1,
+    		minView: 0,
+    		maxView: 1,
+    		forceParse: 0
+    });
+</script>
+
+  </body>
+</html>
